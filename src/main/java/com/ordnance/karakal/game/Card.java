@@ -37,6 +37,16 @@ public class Card {
         this.isJoker = rank.isJoker();
     }
 
+    @Override
+    public String toString() {
+        return "Card{" +
+                "id=" + id +
+                ", suit=" + suit +
+                ", rank=" + rank +
+                ", isJoker=" + isJoker +
+                '}';
+    }
+
     public static final Comparator<Card> BY_RANK =
             (a, b) -> {
                 if (a.rank == Rank.Joker || b.rank == Rank.Joker) {

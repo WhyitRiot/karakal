@@ -23,11 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 
-IntelliJ
+#IntelliJ
 .idea
 
-Environment
+#Environment
 .env
 
-Gradle
+#Gradle
 .gradle
+.gradle/*

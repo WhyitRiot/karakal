@@ -8,16 +8,24 @@ public class GameInstance {
     private Deque<Long> deck;
     private Map<UUID, Player> playerMap;
     private List<UUID> players;
+    private Map<UUID, Integer> scores;
     private int currentPlayerIndex;
     private String gameId;
     private DiscardAction lastPlay;
     private UUID currentPlayer;
+    private UUID karakalPlayer;
+    private boolean finalRound;
     private List<Long> discard;
 
     public GameInstance(String gameId){
         this.gameId = gameId;
         this.cardMap = createDeck();
+        this.playerMap = new HashMap<>();
+        this.scores = new HashMap<>();
+        this.players = new ArrayList<>();
         this.deck = shuffleDeck(this.cardMap);
+        this.discard = new ArrayList<>();
+        this.finalRound = false;
         ArrayList<Long> firstDiscard = new ArrayList<>();
         firstDiscard.add(this.deck.pop());
         this.lastPlay = new DiscardAction(null, firstDiscard);
@@ -25,8 +33,10 @@ public class GameInstance {
 
     public void addPlayer(UUID uuid, String name){
         Player newPlayer = new Player(uuid, name);
+        this.players.add(uuid);
         dealHand(newPlayer);
         this.playerMap.put(uuid, newPlayer);
+        this.scores.put(uuid, 0);
     }
 
     public void dealHand(Player player){
@@ -41,6 +51,20 @@ public class GameInstance {
         this.currentPlayer = players.getFirst();
     }
 
+    public void drawFromDiscard(long cardId){
+        Player player = playerMap.get(this.currentPlayer);
+        this.lastPlay.cardIds.remove(cardId);
+        player.getHand().add(cardId);
+        this.discard.addAll(this.lastPlay.cardIds);
+        nextTurn();
+    }
+
+    public void drawFromDeck(){
+        Player player = playerMap.get(this.currentPlayer);
+        player.getHand().add(this.deck.pop());
+        nextTurn();
+    }
+
     public void discard(UUID uuid, List<Long> cardIds){
         Player player = playerMap.get(uuid);
         if (!isStraight(cardIds) && !isRanked(cardIds)){
@@ -51,12 +75,75 @@ public class GameInstance {
         }
         this.discard.addAll(this.lastPlay.cardIds);
         this.lastPlay = new DiscardAction(uuid, cardIds);
+    }
+
+    public void calculateScore(UUID uuid){
+        Player player = playerMap.get(uuid);
+        int score = 0;
+        for (long id: player.getHand()){
+            score += cardMap.get(id).getRank().getValue();
+        }
+        player.setScore(score);
+    }
+
+    public void callKarakal(){
+        this.karakalPlayer = currentPlayer;
         nextTurn();
     }
 
     public void nextTurn(){
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        UUID nextPlayer = players.get(currentPlayerIndex);
+        calculateScore(currentPlayer);
+        if (karakalPlayer == null){
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+            this.currentPlayer = players.get(currentPlayerIndex);
+        } else if (karakalPlayer.equals(currentPlayer) && finalRound){
+            calculateRoundScore();
+            endRound();
+        } else if (karakalPlayer != null){
+            finalRound = true;
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+            this.currentPlayer = players.get(currentPlayerIndex);
+        }
+    }
+
+    public void newRound(){
+        this.deck = shuffleDeck(this.cardMap);
+        this.discard.clear();
+        ArrayList<Long> firstDiscard = new ArrayList<>();
+        firstDiscard.add(deck.pop());
+        this.lastPlay = new DiscardAction(null, firstDiscard);
+        for (UUID uuid : playerMap.keySet()){
+            dealHand(playerMap.get(uuid));
+        }
+    }
+
+    public void endRound(){
+        this.karakalPlayer = null;
+        for (UUID uuid : playerMap.keySet()){
+            playerMap.get(uuid).setScore(0);
+        }
+    }
+
+    public void calculateRoundScore(){
+        Map<UUID, Integer> tempScores = new HashMap<>();
+        int lowest = Integer.MAX_VALUE;
+        for (UUID uuid : scores.keySet()){
+            int score = playerMap.get(uuid).getScore();
+            if (score < lowest) lowest = score;
+            tempScores.put(uuid, score);
+        }
+        if (scores.get(karakalPlayer) > lowest){
+            scores.put(karakalPlayer, scores.get(karakalPlayer) + 30);
+        }
+        for (UUID uuid : scores.keySet()){
+            if (uuid.equals(karakalPlayer)){
+                continue;
+            }
+            int score = playerMap.get(uuid).getScore();
+            if (score > lowest){
+                scores.put(uuid, scores.get(uuid) + score);
+            }
+        }
     }
 
     public Map<Long, Card> createDeck(){
@@ -148,6 +235,10 @@ public class GameInstance {
         return true;
     }
 
+    public List<Long> getLastDiscard(){
+        return this.lastPlay.cardIds;
+    }
+
     public Deque<Long> getDeck() {
         return deck;
     }
@@ -183,5 +274,31 @@ public class GameInstance {
 
     public void setGameId(String gameId) {
         this.gameId = gameId;
+    }
+
+    public UUID getCurrentPlayer(){
+        return this.currentPlayer;
+    }
+
+    public List<UUID> getPlayers(){
+        return this.players;
+    }
+
+    public Player getPlayerByUUID(UUID uuid){
+        return playerMap.get(uuid);
+    }
+
+    public void printPlayerHandByUUID(UUID uuid){
+        Player player = this.playerMap.get(uuid);
+        for (long id: player.getHand()){
+            System.out.println(this.cardMap.get(id));
+        }
+    }
+
+    public void printDeck(){
+        System.out.println("Cards in deck: " + this.deck.size());
+        for(long id: this.deck){
+            System.out.println(cardMap.get(id));
+        }
     }
 }
