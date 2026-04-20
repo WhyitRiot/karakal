@@ -4,11 +4,13 @@ import java.util.*;
 
 public class GameInstance {
     private final int cardDealAmount = 7;
+    private final int gameOverPointThreshold = 100;
     private Map<Long, Card> cardMap;
     private Deque<Long> deck;
     private Map<UUID, Player> playerMap;
     private List<UUID> players;
     private Map<UUID, Integer> scores;
+    private boolean gameOver;
     private int currentPlayerIndex;
     private String gameId;
     private DiscardAction lastPlay;
@@ -21,6 +23,7 @@ public class GameInstance {
         this.gameId = gameId;
         this.cardMap = createDeck();
         this.playerMap = new HashMap<>();
+        this.gameOver = false;
         this.scores = new HashMap<>();
         this.players = new ArrayList<>();
         this.deck = shuffleDeck(this.cardMap);
@@ -63,6 +66,15 @@ public class GameInstance {
         Player player = playerMap.get(this.currentPlayer);
         player.getHand().add(this.deck.pop());
         nextTurn();
+    }
+
+    public void resetDeck(){
+        if (!deck.isEmpty()){
+            return;
+        }
+        Collections.shuffle(this.discard);
+        this.deck.addAll(this.discard);
+        this.discard.clear();
     }
 
     public void discard(UUID uuid, List<Long> cardIds){
@@ -142,6 +154,9 @@ public class GameInstance {
             int score = playerMap.get(uuid).getScore();
             if (score > lowest){
                 scores.put(uuid, scores.get(uuid) + score);
+            }
+            if (scores.get(uuid) >= gameOverPointThreshold){
+                this.gameOver = true;
             }
         }
     }
@@ -293,6 +308,10 @@ public class GameInstance {
         for (long id: player.getHand()){
             System.out.println(this.cardMap.get(id));
         }
+    }
+
+    public boolean isGameOver(){
+        return this.gameOver;
     }
 
     public void printDeck(){
