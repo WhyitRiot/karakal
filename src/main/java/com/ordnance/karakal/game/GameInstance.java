@@ -5,6 +5,8 @@ import java.util.*;
 public class GameInstance {
     private final int cardDealAmount = 7;
     private final int gameOverPointThreshold = 100;
+    private int startingDeckCount = 1;
+    private int expectedPlayerCount = 4;
     private Map<Long, Card> cardMap;
     private Deque<Long> deck;
     private Map<UUID, Player> playerMap;
@@ -21,7 +23,7 @@ public class GameInstance {
 
     public GameInstance(String gameId){
         this.gameId = gameId;
-        this.cardMap = createDeck();
+        this.cardMap = createDeck(startingDeckCount);
         this.playerMap = new HashMap<>();
         this.gameOver = false;
         this.scores = new HashMap<>();
@@ -35,11 +37,25 @@ public class GameInstance {
     }
 
     public void addPlayer(UUID uuid, String name){
+        if (players.size() + 1 > expectedPlayerCount){
+            expectedPlayerCount = expectedPlayerCount + 4;
+            this.lastPlay.cardIds.clear();
+            this.cardMap = createDeck(++startingDeckCount);
+            this.deck = shuffleDeck(this.cardMap);
+            this.lastPlay.cardIds.add(this.deck.pop());
+            dealDeck();
+        }
         Player newPlayer = new Player(uuid, name);
         this.players.add(uuid);
         dealHand(newPlayer);
         this.playerMap.put(uuid, newPlayer);
         this.scores.put(uuid, 0);
+    }
+
+    public void dealDeck(){
+        for (UUID uuid: this.playerMap.keySet()){
+            dealHand(this.playerMap.get(uuid));
+        }
     }
 
     public void dealHand(Player player){
@@ -161,20 +177,22 @@ public class GameInstance {
         }
     }
 
-    public Map<Long, Card> createDeck(){
+    public Map<Long, Card> createDeck(int decks){
         Map<Long, Card> map = new HashMap<>();
         long id = 0L;
-        map.put(id,new Card(id,null, Rank.Joker));
-        id++;
-        map.put(id,new Card(id, null, Rank.Joker));
-        id++;
-        for (Suit suit : Suit.values()){
-            for (Rank rank : Rank.values()){
-                if (rank == Rank.Joker){
-                    continue;
+        for (int i = 0; i < decks; i++){
+            map.put(id,new Card(id,null, Rank.Joker));
+            id++;
+            map.put(id,new Card(id, null, Rank.Joker));
+            id++;
+            for (Suit suit : Suit.values()){
+                for (Rank rank : Rank.values()){
+                    if (rank == Rank.Joker){
+                        continue;
+                    }
+                    map.put(id, new Card(id, suit, rank));
+                    id++;
                 }
-                map.put(id, new Card(id, suit, rank));
-                id++;
             }
         }
         return map;
