@@ -1,4 +1,58 @@
 package com.ordnance.karakal.websocket;
 
+import com.ordnance.karakal.game.GameInstance;
+import com.ordnance.karakal.game.GameState;
+import com.ordnance.karakal.game.PlayerState;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 public class GameService {
+    private final Map<UUID, GameInstance> games;
+
+    public GameService(){
+        this.games = new HashMap<>();
+    }
+
+    public GameState currentState(UUID gameId){
+        return this.games.get(gameId).getState();
+    }
+
+    public PlayerState getPlayerState(UUID gameId, UUID playerId){
+        return this.games.get(gameId).getPlayerState(playerId);
+    }
+
+    public UUID createGame(){
+        UUID gameId = UUID.randomUUID();
+        this.games.put(gameId, new GameInstance(gameId.toString()));
+        return gameId;
+    }
+
+    public UUID addPlayer(UUID gameId, String playerName){
+        UUID playerId = UUID.randomUUID();
+        this.games.get(gameId).addPlayer(playerId, playerName);
+        return playerId;
+    }
+
+    public void beginGame(UUID gameId){
+        this.games.get(gameId).startGame();
+    }
+
+    public void discardAction(UUID gameId, UUID playerId, List<Long> cards){
+        this.games.get(gameId).discard(playerId, cards);
+    }
+
+    public void drawFromDeck(UUID gameId){
+        this.games.get(gameId).drawFromDeck();
+    }
+
+    public void drawFromDiscard(UUID gameId, long cardId){
+        this.games.get(gameId).drawFromDiscard(cardId);
+    }
+
+    public void callKarakal(UUID gameId){
+        this.games.get(gameId).callKarakal();
+    }
 }
