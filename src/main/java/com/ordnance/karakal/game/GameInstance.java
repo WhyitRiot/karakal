@@ -7,6 +7,7 @@ public class GameInstance {
     private final int gameOverPointThreshold = 100;
     private int startingDeckCount = 1;
     private int expectedPlayerCount = 4;
+    private int deckToPlayerRatio = 4;
     private Map<Long, Card> cardMap;
     private Deque<Long> deck;
     private Map<UUID, Player> playerMap;
@@ -38,7 +39,7 @@ public class GameInstance {
 
     public void addPlayer(UUID uuid, String name){
         if (players.size() + 1 > expectedPlayerCount){
-            expectedPlayerCount = expectedPlayerCount + 4;
+            expectedPlayerCount += deckToPlayerRatio;
             this.lastPlay.cardIds.clear();
             this.cardMap = createDeck(++startingDeckCount);
             this.deck = shuffleDeck(this.cardMap);
