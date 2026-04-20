@@ -7,10 +7,11 @@ public class GameInstance {
     private final int gameOverPointThreshold = 100;
     private int startingDeckCount = 1;
     private int expectedPlayerCount = 4;
-    private int deckToPlayerRatio = 4;
+    private final int deckToPlayerRatio = 4;
     private Map<Long, Card> cardMap;
     private Deque<Long> deck;
     private Map<UUID, Player> playerMap;
+    private TreeMap<UUID, Integer> leaderboard;
     private List<UUID> players;
     private Map<UUID, Integer> scores;
     private boolean gameOver;
@@ -28,6 +29,7 @@ public class GameInstance {
         this.playerMap = new HashMap<>();
         this.gameOver = false;
         this.scores = new HashMap<>();
+        this.leaderboard = new TreeMap<>();
         this.players = new ArrayList<>();
         this.deck = shuffleDeck(this.cardMap);
         this.discard = new ArrayList<>();
@@ -35,6 +37,33 @@ public class GameInstance {
         ArrayList<Long> firstDiscard = new ArrayList<>();
         firstDiscard.add(this.deck.pop());
         this.lastPlay = new DiscardAction(null, firstDiscard);
+    }
+
+    public GameState getState(){
+        GameState snapshot = new GameState();
+        snapshot.currentPlayer = this.currentPlayer;
+        snapshot.gameId = this.gameId;
+        snapshot.deckSize = this.deck.size();
+        snapshot.discardSize = this.discard.size();
+        snapshot.players = this.players;
+        snapshot.leaderboard = this.leaderboard;
+        snapshot.lastPlay = this.lastPlay;
+        snapshot.inProgress = this.gameOver;
+        return snapshot;
+    }
+
+    public PlayerState getPlayerState(UUID playerId){
+        PlayerState snapshot = new PlayerState();
+        Player player = getPlayerByUUID(playerId);
+        snapshot.userId = player.getUuid();
+        snapshot.name = player.getName();
+        snapshot.score = player.getScore();
+        List<Card> playerHand = new ArrayList<>();
+        for (long id : player.getHand()){
+            playerHand.add(this.cardMap.get(id));
+        }
+        snapshot.hand = playerHand;
+        return snapshot;
     }
 
     public void addPlayer(UUID uuid, String name){
@@ -128,6 +157,9 @@ public class GameInstance {
         } else if (karakalPlayer.equals(currentPlayer) && finalRound){
             calculateRoundScore();
             endRound();
+            if (!gameOver){
+                newRound();
+            }
         } else if (karakalPlayer != null){
             finalRound = true;
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
@@ -156,11 +188,16 @@ public class GameInstance {
     public void calculateRoundScore(){
         Map<UUID, Integer> tempScores = new HashMap<>();
         int lowest = Integer.MAX_VALUE;
+        UUID lowestPlayer = karakalPlayer;
         for (UUID uuid : scores.keySet()){
             int score = playerMap.get(uuid).getScore();
-            if (score < lowest) lowest = score;
+            if (score < lowest){
+                lowest = score;
+                lowestPlayer = uuid;
+            }
             tempScores.put(uuid, score);
         }
+        this.currentPlayer = lowestPlayer;
         if (scores.get(karakalPlayer) > lowest){
             scores.put(karakalPlayer, scores.get(karakalPlayer) + 30);
         }
@@ -176,6 +213,7 @@ public class GameInstance {
                 this.gameOver = true;
             }
         }
+        leaderboard.putAll(scores);
     }
 
     public Map<Long, Card> createDeck(int decks){
