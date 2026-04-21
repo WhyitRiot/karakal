@@ -3,12 +3,14 @@ package com.ordnance.karakal.websocket;
 import com.ordnance.karakal.game.GameInstance;
 import com.ordnance.karakal.game.GameState;
 import com.ordnance.karakal.game.PlayerState;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Service
 public class GameService {
     private final Map<UUID, GameInstance> games;
 

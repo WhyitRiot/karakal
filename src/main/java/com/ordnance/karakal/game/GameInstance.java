@@ -3,17 +3,18 @@ package com.ordnance.karakal.game;
 import java.util.*;
 
 public class GameInstance {
+    private final Map<UUID, Player> playerMap;
+    private final TreeMap<UUID, Integer> leaderboard;
+    private final List<UUID> players;
+    private final Map<UUID, Integer> scores;
     private final int cardDealAmount = 7;
     private final int gameOverPointThreshold = 100;
+    private final int deckToPlayerRatio = 4;
+
     private int startingDeckCount = 1;
     private int expectedPlayerCount = 4;
-    private final int deckToPlayerRatio = 4;
     private Map<Long, Card> cardMap;
     private Deque<Long> deck;
-    private Map<UUID, Player> playerMap;
-    private TreeMap<UUID, Integer> leaderboard;
-    private List<UUID> players;
-    private Map<UUID, Integer> scores;
     private boolean gameOver;
     private int currentPlayerIndex;
     private String gameId;
