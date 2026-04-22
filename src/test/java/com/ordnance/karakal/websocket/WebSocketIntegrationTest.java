@@ -73,6 +73,6 @@ public class WebSocketIntegrationTest {
         String gameId = gameIdFuture.get(10, TimeUnit.SECONDS);
 
         assertNotNull(gameId);
-        System.out.println(gameId);
+        System.out.println("GAME ID: " +gameId);
     }
 }

@@ -21,6 +21,6 @@ public class GameController{
     @MessageMapping("/play")
     public void handleMessage(@Payload ClientMessage message, Principal principal){
         messageDispatcher.dispatch(message, principal);
-        System.out.println("handled");
+        System.out.println("CONTROLLER PRINCIPAL: " + principal.getName());
     }
 }
