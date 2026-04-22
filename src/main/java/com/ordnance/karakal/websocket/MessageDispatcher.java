@@ -1,8 +1,10 @@
 package com.ordnance.karakal.websocket;
 
+
 import com.ordnance.karakal.websocket.handlers.*;
-import com.ordnance.karakal.websocket.messages.ClientMessage;
+import com.ordnance.karakal.websocket.messages.*;
 import org.hibernate.mapping.Join;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
@@ -19,11 +21,11 @@ public class MessageDispatcher {
             DrawHandler drawHandler,
             CallHandler callHandler
     ){
-        handlers.put(CreateHandler.class, createhandler);
-        handlers.put(JoinHandler.class, joinHandler);
-        handlers.put(DiscardHandler.class, discardHandler);
-        handlers.put(DrawHandler.class, drawHandler);
-        handlers.put(CallHandler.class, callHandler);
+        handlers.put(CreateMessage.class, createhandler);
+        handlers.put(JoinMessage.class, joinHandler);
+        handlers.put(DiscardMessage.class, discardHandler);
+        handlers.put(DrawMessage.class, drawHandler);
+        handlers.put(CallMessage.class, callHandler);
     }
     @SuppressWarnings("unchecked")
     public void dispatch(ClientMessage message, Principal principal){

@@ -2,6 +2,7 @@ package com.ordnance.karakal.websocket.handlers;
 
 import com.ordnance.karakal.websocket.GameService;
 import com.ordnance.karakal.websocket.messages.CreateMessage;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,8 @@ public class CreateHandler implements MessageHandler<CreateMessage> {
 
     @Override
     public void handle(CreateMessage message, Principal principal) {
-        UUID gameId = this.gameService.createGame(message.gameId);
+        UUID gameId = this.gameService.createGame("what");
+        System.out.println(principal.getName() + "/game/karakal-created" + gameId);
         this.simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/karakal-created", gameId);
     }
 }

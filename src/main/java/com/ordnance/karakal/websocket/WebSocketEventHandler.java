@@ -18,6 +18,7 @@ public class WebSocketEventHandler{
     public void handleConnect(SessionConnectEvent connectEvent){
         Principal user = connectEvent.getUser();
         String playerId = user.getName();
-        messagingTemplate.convertAndSendToUser(playerId, "/karakal/game/", playerId);
+        System.out.println("CONNECT PRINCIPAL: " + playerId);
+        messagingTemplate.convertAndSendToUser(playerId, "/user/queue", playerId);
     }
 }

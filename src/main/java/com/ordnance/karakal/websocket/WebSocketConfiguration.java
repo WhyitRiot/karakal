@@ -14,11 +14,14 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     public void configureMessageBroker(MessageBrokerRegistry config){
         config.enableSimpleBroker("/game");
         config.setApplicationDestinationPrefixes("/app");
+        config.setUserDestinationPrefix("/user");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry){
-        registry.addEndpoint("/karakal");
+        registry.addEndpoint("/karakal")
+                .setAllowedOriginPatterns("*")
+                .setHandshakeHandler(new UserHandshakeHandler());
     }
 
 }
