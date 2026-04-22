@@ -26,9 +26,9 @@ public class GameService {
         return this.games.get(gameId).getPlayerState(playerId);
     }
 
-    public UUID createGame(){
+    public UUID createGame(String Id){
         UUID gameId = UUID.randomUUID();
-        this.games.put(gameId, new GameInstance(gameId.toString()));
+        this.games.put(gameId, new GameInstance(Id));
         return gameId;
     }
 
