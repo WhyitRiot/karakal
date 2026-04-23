@@ -19,8 +19,10 @@ public class JoinHandler implements MessageHandler<JoinMessage>{
     }
     @Override
     public void handle(JoinMessage message, Principal principal) {
-        UUID playerId = gameService.addPlayer(message.gameId, message.playerName);
+        UUID playerId = UUID.fromString(principal.getName());
+        gameService.addPlayer(message.gameId, message.playerName, UUID.fromString(principal.getName()));
         this.simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/new-player", playerId);
+        this.simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/player-state", this.gameService.getPlayerState(message.gameId, playerId));
         this.simpMessagingTemplate.convertAndSend("/game/" + message.gameId, this.gameService.currentState(message.gameId));
     }
 }

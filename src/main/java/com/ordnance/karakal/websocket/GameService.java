@@ -32,10 +32,8 @@ public class GameService {
         return gameId;
     }
 
-    public UUID addPlayer(UUID gameId, String playerName){
-        UUID playerId = UUID.randomUUID();
+    public void addPlayer(UUID gameId, String playerName, UUID playerId){
         this.games.get(gameId).addPlayer(playerId, playerName);
-        return playerId;
     }
 
     public void beginGame(UUID gameId){

@@ -26,7 +26,8 @@ public class DrawHandler implements MessageHandler<DrawMessage>{
         if (message.drawType == DRAW.DISCARD){
             this.gameService.drawFromDiscard(message.gameId, message.cardId);
         }
-        this.simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/game/draw", this.gameService.getPlayerState(message.gameId, UUID.fromString(principal.getName())));
-        this.simpMessagingTemplate.convertAndSend("/game" + message.gameId, this.gameService.currentState(message.gameId));
+        System.out.println(principal.getName());
+        this.simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/player-state", this.gameService.getPlayerState(message.gameId, message.playerId));
+        this.simpMessagingTemplate.convertAndSend("/game/" + message.gameId, this.gameService.currentState(message.gameId));
     }
 }

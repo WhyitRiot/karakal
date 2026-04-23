@@ -21,6 +21,5 @@ public class StartHandler implements MessageHandler<StartMessage>{
     public void handle(StartMessage message, Principal principal) {
         this.gameService.beginGame(message.gameId);
         this.simpMessagingTemplate.convertAndSend("/game/" + message.gameId, this.gameService.currentState(message.gameId));
-        System.out.println("Handled");
     }
 }

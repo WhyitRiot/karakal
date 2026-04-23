@@ -21,7 +21,7 @@ public class DiscardHandler implements MessageHandler<DiscardMessage>{
     @Override
     public void handle(DiscardMessage message, Principal principal) {
         this.gameService.discardAction(message.gameId, message.playerId, message.cardIds);
-        this.simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/discarded", this.gameService.getPlayerState(message.gameId, UUID.fromString(principal.getName())));
+        this.simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/player-state", this.gameService.getPlayerState(message.gameId, message.playerId));
         this.simpMessagingTemplate.convertAndSend("/game/" + message.gameId, this.gameService.currentState(message.gameId));
     }
 }

@@ -8,4 +8,16 @@ public class PlayerState {
     public String name;
     public int score;
     public List<Card> hand;
+
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        for (Card card : hand){
+            builder.append(card.toString());
+            builder.append(" ");
+        }
+        return "User ID: " + userId + "\n" +
+                "Name: " + name + "\n" +
+                "Score: " + score + "\n" +
+                builder.toString();
+    }
 }
