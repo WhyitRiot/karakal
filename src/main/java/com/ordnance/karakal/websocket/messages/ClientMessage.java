@@ -15,7 +15,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
                 @JsonSubTypes.Type(value = JoinMessage.class, name = "JOIN"),
                 @JsonSubTypes.Type(value = DiscardMessage.class, name = "DISCARD"),
                 @JsonSubTypes.Type(value = DrawMessage.class, name = "DRAW"),
-                @JsonSubTypes.Type(value = CallMessage.class, name = "CALL")
+                @JsonSubTypes.Type(value = CallMessage.class, name = "CALL"),
+                @JsonSubTypes.Type(value = StartMessage.class, name = "START")
         }
 )
 

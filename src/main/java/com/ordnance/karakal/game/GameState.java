@@ -15,9 +15,15 @@ public class GameState {
     public boolean inProgress;
 
     public String toString(){
+        StringBuilder builder = new StringBuilder();
+        for (UUID id : players){
+            builder.append(id);
+            builder.append(", ");
+        }
         return "Game ID: "+ gameId + "\n" +
                 "Deck Size: " + deckSize + "\n" +
                 "Discard Size: " + discardSize + "\n" +
-                "Current Player: " + currentPlayer + "\n";
+                "Current Player: " + currentPlayer + "\n" +
+                "Players: " + builder.toString();
     }
 }

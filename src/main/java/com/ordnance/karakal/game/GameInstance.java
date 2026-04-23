@@ -22,6 +22,7 @@ public class GameInstance {
     private UUID currentPlayer;
     private UUID karakalPlayer;
     private boolean finalRound;
+    private boolean started;
     private List<Long> discard;
 
     public GameInstance(String gameId){
@@ -29,6 +30,7 @@ public class GameInstance {
         this.cardMap = createDeck(startingDeckCount);
         this.playerMap = new HashMap<>();
         this.gameOver = false;
+        this.started = false;
         this.scores = new HashMap<>();
         this.leaderboard = new TreeMap<>();
         this.players = new ArrayList<>();
@@ -49,7 +51,7 @@ public class GameInstance {
         snapshot.players = this.players;
         snapshot.leaderboard = this.leaderboard;
         snapshot.lastPlay = this.lastPlay;
-        snapshot.inProgress = this.gameOver;
+        snapshot.inProgress = this.started;
         return snapshot;
     }
 
@@ -99,6 +101,7 @@ public class GameInstance {
 
     public void startGame(){
         this.currentPlayer = players.getFirst();
+        this.started = true;
     }
 
     public void drawFromDiscard(long cardId){

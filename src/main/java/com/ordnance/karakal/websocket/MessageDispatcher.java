@@ -4,6 +4,7 @@ package com.ordnance.karakal.websocket;
 import com.ordnance.karakal.websocket.handlers.*;
 import com.ordnance.karakal.websocket.messages.*;
 import org.hibernate.mapping.Join;
+import org.hibernate.sql.ast.tree.expression.Star;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
@@ -19,13 +20,15 @@ public class MessageDispatcher {
             JoinHandler joinHandler,
             DiscardHandler discardHandler,
             DrawHandler drawHandler,
-            CallHandler callHandler
+            CallHandler callHandler,
+            StartHandler startHandler
     ){
         handlers.put(CreateMessage.class, createhandler);
         handlers.put(JoinMessage.class, joinHandler);
         handlers.put(DiscardMessage.class, discardHandler);
         handlers.put(DrawMessage.class, drawHandler);
         handlers.put(CallMessage.class, callHandler);
+        handlers.put(StartMessage.class, startHandler);
     }
     @SuppressWarnings("unchecked")
     public void dispatch(ClientMessage message, Principal principal){
