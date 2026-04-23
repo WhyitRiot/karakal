@@ -359,16 +359,6 @@ public class WebSocketIntegrationTest {
             }
         });
 
-        session2.subscribe("/game/" + gameId, new StompFrameHandler(){
-            public Type getPayloadType(StompHeaders headers){
-                return GameState.class;
-            }
-            public void handleFrame(StompHeaders headers, Object payload){
-                gameStateRef.get().complete((GameState) payload);
-            }
-        });
-
-
         joinMessage.put("playerName", "Wyatt");
         joinMessage.put("gameId", gameId);
         session.send("/app/play", joinMessage);
@@ -392,8 +382,8 @@ public class WebSocketIntegrationTest {
         assertNotNull(playerTwoId);
 
         startMessage.put("gameId", gameId);
-        session.send("/app/play", startMessage);
         gameStateRef.set(new CompletableFuture<>());
+        session.send("/app/play", startMessage);
         GameState state = gameStateRef.get().get(5, TimeUnit.SECONDS);
         gameStateRef.set(new CompletableFuture<>());
         assertThat(state.inProgress).isEqualTo(true);
