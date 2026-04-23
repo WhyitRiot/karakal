@@ -13,4 +13,11 @@ public class GameState {
     public TreeMap<UUID, Integer> leaderboard;
     public DiscardAction lastPlay;
     public boolean inProgress;
+
+    public String toString(){
+        return "Game ID: "+ gameId + "\n" +
+                "Deck Size: " + deckSize + "\n" +
+                "Discard Size: " + discardSize + "\n" +
+                "Current Player: " + currentPlayer + "\n";
+    }
 }

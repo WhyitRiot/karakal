@@ -10,7 +10,6 @@ JoinMessage:
 
     gameId: UUID
     playerName: 'Wyatt'
-    playerId: UUID
 }
 DrawMessage:
 {

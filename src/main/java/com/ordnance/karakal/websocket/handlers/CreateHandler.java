@@ -21,7 +21,6 @@ public class CreateHandler implements MessageHandler<CreateMessage> {
     @Override
     public void handle(CreateMessage message, Principal principal) {
         UUID gameId = this.gameService.createGame("what");
-        System.out.println(principal.getName() + "/game/karakal-created" + gameId);
         this.simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/karakal-created", gameId);
     }
 }

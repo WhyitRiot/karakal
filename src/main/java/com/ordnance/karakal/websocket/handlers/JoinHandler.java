@@ -7,6 +7,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
+import java.util.UUID;
 
 @Component
 public class JoinHandler implements MessageHandler<JoinMessage>{
@@ -18,7 +19,8 @@ public class JoinHandler implements MessageHandler<JoinMessage>{
     }
     @Override
     public void handle(JoinMessage message, Principal principal) {
-        gameService.addPlayer(message.gameId, message.playerName);
+        UUID playerId = gameService.addPlayer(message.gameId, message.playerName);
+        this.simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/new-player", playerId);
         this.simpMessagingTemplate.convertAndSend("/game/" + message.gameId, this.gameService.currentState(message.gameId));
     }
 }
