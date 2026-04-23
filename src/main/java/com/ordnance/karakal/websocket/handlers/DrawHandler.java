@@ -1,14 +1,12 @@
 package com.ordnance.karakal.websocket.handlers;
 
-import com.ordnance.karakal.websocket.DRAW;
+import com.ordnance.karakal.websocket.messages.DRAW;
 import com.ordnance.karakal.websocket.GameService;
 import com.ordnance.karakal.websocket.messages.DrawMessage;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
-import java.util.UUID;
 
 @Component
 public class DrawHandler implements MessageHandler<DrawMessage>{

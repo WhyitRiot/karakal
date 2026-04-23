@@ -1,8 +1,5 @@
 package com.ordnance.karakal.websocket.messages;
 
-import com.ordnance.karakal.websocket.DRAW;
-
-import java.util.List;
 import java.util.UUID;
 
 public class DrawMessage implements ClientMessage{
