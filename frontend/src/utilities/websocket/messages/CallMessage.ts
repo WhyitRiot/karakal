@@ -3,3 +3,9 @@ export type CallMessage = {
     gameId: string,
     playerId: string
 }
+
+export const createCallMessage = (gameId: string, playerId: string): CallMessage => ({
+    type: "CALL",
+    gameId,
+    playerId
+});
