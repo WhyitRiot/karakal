@@ -1,7 +1,9 @@
-import React, {createContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {type GameState} from './types/GameState.ts'
 import {type PlayerState} from './types/PlayerState.ts'
 import {Client, type IFrame, type IMessage, type StompSubscription} from '@stomp/stompjs'
+import {type GameStateContextType} from "./types/GameStateContextType.ts";
+import {GameStateContext} from "./GameStateContext.tsx";
 import {createCreateMessage} from "./messages/CreateMessage.ts";
 import {createJoinMessage} from "./messages/JoinMessage.ts";
 import {createStartMessage} from "./messages/StartMessage.ts";
