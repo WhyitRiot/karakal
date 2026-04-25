@@ -1,17 +1,23 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import NewPlayerModal from "../components/NewPlayerModal.tsx";
 import {Link} from "react-router";
+import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
+import type {GameStateContextType} from "../utilities/websocket/types/GameStateContextType.ts";
 
 const Home = () => {
-    const [isVisible, setIsVisible] = useState(true);
-    const [playerName, setPlayerName] = useState<string | undefined>(undefined);
+    const context = useContext(GameStateContext);
+    if (!context){
+        throw Error("outside of provider!");
+    }
+    const {playerName, setName} = context;
+    const [isVisible, setIsVisible] = useState((playerName == undefined));
 
     const showModal = (bool: boolean) =>{
         setIsVisible(bool);
     }
 
-    const setName = (name: string) =>{
-        setPlayerName(name);
+    const setPlayerName = (name: string) =>{
+        setName(name);
     }
 
     return (
@@ -30,7 +36,7 @@ const Home = () => {
                 </div>
             }
 
-            <NewPlayerModal setPlayerName={setName} isVisible={isVisible} setIsVisible={showModal}/>
+            <NewPlayerModal setPlayerName={setPlayerName} isVisible={isVisible} setIsVisible={showModal}/>
         </>
     );
 };

@@ -19,8 +19,8 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [connected, setConnected] = useState(false);
 
     const URL = "ws://localhost:8080/karakal";
-    const gameCreatedUrl = "karakal-created";
-    const newPlayer = "new-player";
+    const gameCreatedUrl = "/user/queue/karakal-created";
+    const newPlayer = "/user/queue/new-player";
     const endPoint = "/app/play";
     const gameEndPoint = "/game/"
 
@@ -35,6 +35,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
             onConnect: (frame: IFrame) => {
                 setConnected(true);
                 client.subscribe(gameCreatedUrl, (msg: IMessage) => {
+                    console.log(msg.body)
                     setGameId(msg.body);
                 });
                 client.subscribe(newPlayer, (msg : IMessage) => {
