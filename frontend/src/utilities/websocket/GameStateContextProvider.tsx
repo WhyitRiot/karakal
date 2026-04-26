@@ -7,9 +7,11 @@ import {GameStateContext} from "./GameStateContext.tsx";
 import {createCreateMessage} from "./messages/CreateMessage.ts";
 import {createJoinMessage} from "./messages/JoinMessage.ts";
 import {createStartMessage} from "./messages/StartMessage.ts";
+import type {Card} from "../card.ts";
 
 export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
+    //Multiplayer State
     const [playerName, setPlayerName] = useState<string | undefined>(undefined);
     const [playerId, setPlayerId] = useState<string | undefined>(undefined);
     const [gameId, setGameId] = useState<string | undefined>(undefined);
@@ -17,6 +19,17 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [playerState, setPlayerState] = useState<PlayerState | undefined>(undefined);
     const [client, setClient] = useState<Client>(new Client());
     const [connected, setConnected] = useState(false);
+
+    //Client-side state
+    const [discardHand, setDiscardHand] = useState<Card[]>([]);
+
+    const addCard = (card : Card) => {
+        setDiscardHand(prev => [...prev, card]);
+    }
+
+    const removeCard = (card : Card) => {
+        setDiscardHand(prev => prev.filter(prevCard => prevCard.id != card.id))
+    }
 
     const URL = "ws://localhost:8080/karakal";
     const gameCreatedUrl = "/user/queue/karakal-created";
@@ -86,8 +99,8 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
     return (
         <GameStateContext.Provider value={{
-            playerName, playerId, gameId, gameState, playerState, client, connected,
-            setName, createGame, joinGame, startGame
+            playerName, playerId, gameId, gameState, playerState, client, connected, discardHand,
+            removeCard, addCard, setName, createGame, joinGame, startGame
         }}>
             {children}
         </GameStateContext.Provider>

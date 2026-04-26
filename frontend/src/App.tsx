@@ -2,6 +2,7 @@ import './App.css'
 import {BrowserRouter} from "react-router";
 import SiteRoutes from "./utilities/SiteRoutes.tsx";
 import {GameStateProvider} from "./utilities/websocket/GameStateContextProvider.tsx";
+import Game from "./pages/Game.tsx";
 
 
 function App() {
@@ -10,7 +11,8 @@ function App() {
     <>
         <GameStateProvider>
             <BrowserRouter>
-                <SiteRoutes/>
+                {/*<SiteRoutes/>*/}
+                <Game />
             </BrowserRouter>
         </GameStateProvider>
     </>

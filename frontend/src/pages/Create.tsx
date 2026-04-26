@@ -1,6 +1,5 @@
 import React, {useContext, useEffect} from 'react';
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
-import {createCreateMessage} from "../utilities/websocket/messages/CreateMessage.ts";
 
 const Create = () => {
     const context = useContext(GameStateContext);

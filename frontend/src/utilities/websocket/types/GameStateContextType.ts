@@ -1,6 +1,7 @@
 import type {GameState} from "./GameState.ts";
 import type {PlayerState} from "./PlayerState.ts";
 import {Client} from "@stomp/stompjs";
+import type {Card} from "../../card.ts";
 
 export type GameStateContextType = {
     playerName : string | undefined
@@ -11,6 +12,10 @@ export type GameStateContextType = {
     client : Client,
     connected : boolean
 
+    discardHand : Card[]
+
+    addCard : (card : Card) => void
+    removeCard : (card: Card) => void
     setName : (name: string) => void
 
     createGame : () => void,
