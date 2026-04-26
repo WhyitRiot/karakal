@@ -6,14 +6,9 @@ public class Card {
     private final long id;
     private final Suit suit;
     private final Rank rank;
-    private final boolean isJoker;
 
     public Suit getSuit() {
         return suit;
-    }
-
-    public boolean isJoker(){
-        return this.isJoker;
     }
 
     public Rank getRank() {
@@ -34,7 +29,6 @@ public class Card {
         this.id = id;
         this.rank = rank;
         this.suit = suit;
-        this.isJoker = rank.isJoker();
     }
 
     @Override
@@ -43,7 +37,6 @@ public class Card {
                 "id=" + id +
                 ", suit=" + suit +
                 ", rank=" + rank +
-                ", isJoker=" + isJoker +
                 '}';
     }
 

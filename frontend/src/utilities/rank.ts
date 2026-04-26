@@ -1,4 +1,5 @@
 export const Rank = {
+    Joker: 0,
     Ace: 1,
     Two: 2,
     Three: 3,
