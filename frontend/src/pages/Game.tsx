@@ -4,6 +4,7 @@ import {type Card} from "../utilities/card.ts"
 import {Rank} from "../utilities/rank.ts";
 import {Suit} from "../utilities/suit.ts"
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
+import {getCardStyling} from "../utilities/cardImages.ts";
 import DiscardItem from "../components/DiscardItem.tsx";
 
 const hand = [
@@ -30,7 +31,7 @@ const Game = () => {
             <div className={"flex flex-col items-center gap-4"}>
                 <div className={"flex flex-row gap-3"}>
                     {hand.map(card => {
-                        return <CardItem card={card} key={card.id}/>
+                        return <CardItem card={card} img={getCardStyling(card)} key={card.id}/>
                     })}
                 </div>
             </div>

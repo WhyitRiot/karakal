@@ -1,10 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {type Card, getCardRank} from "../utilities/card.ts";
+import {Suit} from "../utilities/suit.ts";
+import {Rank} from "../utilities/rank.ts";
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
 import {isNewCardSameRank, doesNewCardContinueSuitedStraight} from "../utilities/cardBools.ts"
 import discardItem from "./DiscardItem.tsx";
+import {Jokers, Clubs, Hearts, Spades, Diamonds, rankNames} from "../utilities/cardImages.ts";
 
-const CardItem = ({card} : {card: Card}) => {
+const CardItem = ({card, img} : {card: Card, img : string}) => {
     const [added, setAdded] = useState(false);
     const context = useContext(GameStateContext);
     if (!context){
@@ -29,12 +32,12 @@ const CardItem = ({card} : {card: Card}) => {
             setAdded(true);
         }
     }
+
     return (
         <div onClick={!added ? addThisCard : removeThisCard} className={`flex flex-col border rounded items-center hover:cursor-pointer 
-        ${added && `text-shadow-amber-400/30 -translate-y-10`}
-        ${!canAddCard && !added && `bg-gray-400/30`}`}>
-            {suit && <p>{suit}</p>}
-            <p>{getCardRank(rank)}</p>
+        ${added && `text-shadow-amber-400/30 -translate-y-20`}
+        ${!canAddCard && !added && `opacity-25`}`}>
+            <img src={img} alt={`${card.suit}${card.rank}`}/>
         </div>
     );
 };
