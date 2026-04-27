@@ -1,3 +1,5 @@
+import cardBack from "../assets/cards/blue-back.jpg"
+
 import joker from "../assets/cards/joker.jpg"
 import joker2 from "../assets/cards/joker2.jpg"
 
@@ -61,6 +63,10 @@ import {Rank} from "../utilities/rank.ts"
 import {type Card, getCardRank} from "./card.ts";
 import React from "react";
 import {Suit} from "./suit.ts";
+
+export const cardBacks = {
+    cardBack: cardBack
+}
 
 export const rankNames: Record<number, string> = {
     [Rank.Ace]: "ace",

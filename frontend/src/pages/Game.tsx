@@ -5,38 +5,62 @@ import {Rank} from "../utilities/rank.ts";
 import {Suit} from "../utilities/suit.ts"
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
 import {getCardStyling} from "../utilities/cardImages.ts";
-import DiscardItem from "../components/DiscardItem.tsx";
+import {LayoutGroup, AnimatePresence} from "framer-motion";
+import {AnimatedCardItem} from "../components/AnimatedCardItem.tsx";
+import {doesNewCardContinueSuitedStraight, isNewCardSameRank} from "../utilities/cardBools.ts";
 
-const hand = [
-    {id: 1, rank: Rank.Joker, suit: undefined },
-    {id: 4,  rank: Rank.Ten, suit: Suit.Spades },
-    {id: 7, rank: Rank.King, suit: Suit.Diamonds },
-    {id: 8, rank: Rank.Queen, suit: Suit.Clubs },
-    {id: 14, rank: Rank.Joker, suit: undefined },
-    {id: 15, rank: Rank.Nine, suit: Suit.Spades },
-    {id: 43, rank: Rank.Eight, suit: Suit.Diamonds }
+const hand : Card[] = [
+    {id: 1, rank: Rank.Joker, suit: undefined, state: "hand" },
+    {id: 4,  rank: Rank.Ten, suit: Suit.Spades, state: "hand" },
+    {id: 7, rank: Rank.King, suit: Suit.Diamonds, state: "hand" },
+    {id: 8, rank: Rank.Queen, suit: Suit.Clubs, state: "hand" },
+    {id: 14, rank: Rank.Joker, suit: undefined, state: "hand" },
+    {id: 15, rank: Rank.Nine, suit: Suit.Spades, state: "hand" },
+    {id: 43, rank: Rank.Eight, suit: Suit.Diamonds, state: "hand" }
 ];
 
 const Game = () => {
     const context = useContext(GameStateContext);
     if (!context) throw Error("outside of provider!");
-    const{discardHand} = context;
+    const{discardHand, addCard, removeCard} = context;
+    const[currhand, setCurrHand] = useState<Card[]>(hand);
+
+    const removeThisCard = (card : Card) => {
+        removeCard(card);
+        setCurrHand(prev => prev.map(c => c.id === card.id ? {...c, state: "hand"} : c))
+    }
+
+    const addThisCard = (card : Card) => {
+        if (isNewCardSameRank(discardHand, card) || doesNewCardContinueSuitedStraight(discardHand, card)){
+            addCard(card);
+            setCurrHand(prev => prev.map(c => c.id === card.id ? {...c, state: "selected"} : c))
+        }
+    }
     return (
-        <div className={"flex flex-col h-screen w-screen justify-around"}>
+            <div className={"relative w-screen h-screen overflow-hidden"}>
 
-            <div className={"flex flex-row gap-5 justify-center"}>
-                <p className={"border rounded"}>Discard</p>
-                <p className={"border rounded"}>Deck</p>
-            </div>
-            <div className={"flex flex-col items-center gap-4"}>
-                <div className={"flex flex-row gap-3"}>
-                    {hand.map(card => {
-                        return <CardItem card={card} img={getCardStyling(card)} key={card.id}/>
-                    })}
-                </div>
-            </div>
+                    <div className={"absolute top-4 w-full flex justify-center gap-5"}>
+                        <p className={"border rounded px-2"}>Discard</p>
+                        <p className={"border rounded px-2"}>Deck</p>
+                    </div>
 
-        </div>
+                    <div className={"absolute inset-0 flex items-center justify-center"}>
+                        <AnimatePresence>
+                            {currhand.filter(card => card.state === "selected").map(card =>
+                                <AnimatedCardItem key={card.id} card={card} handleClick={removeThisCard}/>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    <div className={"absolute bottom-4 w-full flex justify-center gap-3 min-h-[200px]"}>
+                        <AnimatePresence>
+                            {currhand.filter(card => card.state === "hand").map(card => (
+                                <AnimatedCardItem key={card.id} card={card} handleClick={addThisCard}/>
+                            ))}
+                        </AnimatePresence>
+                    </div>
+
+            </div>
     );
 };
 

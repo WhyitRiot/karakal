@@ -1,10 +1,13 @@
 import {Suit} from "./suit.ts"
 import {Rank} from "./rank.ts"
 
+export type CardState = "hand" | "selected" | "discard"
+
 export type Card = {
     id : number
     rank: Rank
     suit?: Suit
+    state: CardState
 }
 
 export const getCardRank = (rank : Rank) : string =>{
