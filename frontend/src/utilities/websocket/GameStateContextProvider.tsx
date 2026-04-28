@@ -8,8 +8,23 @@ import {createCreateMessage} from "./messages/CreateMessage.ts";
 import {createJoinMessage} from "./messages/JoinMessage.ts";
 import {createStartMessage} from "./messages/StartMessage.ts";
 import type {Card} from "../card.ts";
+import {Rank} from "../rank.ts";
+import {Suit} from "../suit.ts";
 
 export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
+
+    //DEV
+    const hand : Card[] = [
+        {id: 1, rank: Rank.Joker, suit: undefined, state: "hand" },
+        {id: 4,  rank: Rank.Ten, suit: Suit.Spades, state: "hand" },
+        {id: 7, rank: Rank.King, suit: Suit.Diamonds, state: "hand" },
+        {id: 8, rank: Rank.Queen, suit: Suit.Clubs, state: "hand" },
+        {id: 14, rank: Rank.Joker, suit: undefined, state: "hand" },
+        {id: 15, rank: Rank.Nine, suit: Suit.Spades, state: "hand" },
+        {id: 43, rank: Rank.Eight, suit: Suit.Diamonds, state: "hand" },
+        {id: 66, rank: Rank.Ace, suit: Suit.Diamonds, state: "deck"}
+    ];
+
 
     //Multiplayer State
     const [playerName, setPlayerName] = useState<string | undefined>(undefined);
@@ -20,8 +35,18 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [client, setClient] = useState<Client>(new Client());
     const [connected, setConnected] = useState(false);
 
+    const discard = () => {
+        // TODO add discard server call
+        resetDiscardHand()
+    }
+
     //Client-side state
+    const [tableCards, setTableCards] = useState<Card[]>(hand);
     const [discardHand, setDiscardHand] = useState<Card[]>([]);
+
+    const resetDiscardHand = () => {
+        setDiscardHand([]);
+    }
 
     const addCard = (card : Card) => {
         setDiscardHand(prev => [...prev, card]);
@@ -99,8 +124,8 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
     return (
         <GameStateContext.Provider value={{
-            playerName, playerId, gameId, gameState, playerState, client, connected, discardHand,
-            removeCard, addCard, setName, createGame, joinGame, startGame
+            playerName, playerId, gameId, gameState, playerState, client, connected, discardHand, tableCards,
+            discard, removeCard, addCard, setName, resetDiscardHand, createGame, joinGame, startGame
         }}>
             {children}
         </GameStateContext.Provider>

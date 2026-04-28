@@ -16,14 +16,29 @@ const hand : Card[] = [
     {id: 8, rank: Rank.Queen, suit: Suit.Clubs, state: "hand" },
     {id: 14, rank: Rank.Joker, suit: undefined, state: "hand" },
     {id: 15, rank: Rank.Nine, suit: Suit.Spades, state: "hand" },
-    {id: 43, rank: Rank.Eight, suit: Suit.Diamonds, state: "hand" }
+    {id: 43, rank: Rank.Eight, suit: Suit.Diamonds, state: "hand" },
+    {id: 66, rank: Rank.Ace, suit: Suit.Diamonds, state: "deck"}
 ];
 
 const Game = () => {
     const context = useContext(GameStateContext);
     if (!context) throw Error("outside of provider!");
-    const{discardHand, addCard, removeCard} = context;
-    const[currhand, setCurrHand] = useState<Card[]>(hand);
+    const{discardHand, tableCards, addCard, removeCard, discard, resetDiscardHand} = context;
+    const[currhand, setCurrHand] = useState<Card[]>(tableCards);
+
+    const discardLocal = () => {
+        setCurrHand(prev => prev.map(c => c.state === "selected" ? {...c, state: "discard"}: c))
+        discard();
+    }
+
+    const drawFromDeck = (card : Card) =>{
+        setCurrHand(prev => prev.map(c => c.id === card.id ? {...c, state: "hand"} : c))
+    }
+
+    const resetLocalDiscardHand = () => {
+        setCurrHand(prev => prev.map(c => c.state === "selected" ? {...c, state: "hand"} : c))
+        resetDiscardHand();
+    }
 
     const removeThisCard = (card : Card) => {
         removeCard(card);
@@ -38,27 +53,69 @@ const Game = () => {
     }
     return (
             <div className={"relative w-screen h-screen overflow-hidden"}>
+                <LayoutGroup>
 
-                    <div className={"absolute top-4 w-full flex justify-center gap-5"}>
+                    <div className={"absolute top-4 w-full flex flex-row justify-center gap-5"}>
                         <p className={"border rounded px-2"}>Discard</p>
                         <p className={"border rounded px-2"}>Deck</p>
                     </div>
 
-                    <div className={"absolute inset-0 flex items-center justify-center"}>
-                        <AnimatePresence>
-                            {currhand.filter(card => card.state === "selected").map(card =>
-                                <AnimatedCardItem key={card.id} card={card} handleClick={removeThisCard}/>
-                            )}
-                        </AnimatePresence>
+                        <div className={"h-1/3 w-full flex items-center justify-center ml-2 mr-2 gap-10"}>
+                            <div className={"w-1/4 flex flex-col items-center border rounded-3xl"}>
+                                <div className={"h-48 flex flex-col items-center"}>
+                                    <div className={"relative w-32 h-48 flex flex-row justify-center"}>
+                                        <AnimatePresence>
+                                            {currhand.filter(card => card.state === "discard").map(card =>
+                                                <AnimatedCardItem key={card.id} card={card} deck={false} layoutId={card.id.toString()}/>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                </div>
+                                <h2>Discard</h2>
+                            </div>
+                            <div className={"w-1/4 flex flex-col items-center border rounded-3xl"}>
+                                <div className={"h-48 flex flex-col items-center"}>
+                                    <div className={"relative w-32 h-48 flex flex-row justify-center"}>
+                                        <AnimatePresence>
+                                            {currhand.filter(card => card.state === "deck").map(card =>
+                                                <AnimatedCardItem key={card.id} card={card} deck={true} moveFunction={drawFromDeck} layoutId={card.id.toString()}/>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                </div>
+                                <h2>Deck</h2>
+                            </div>
+                        </div>
+
+                    <div className={"h-1/3 w-full flex items-center justify-center"}>
+                        <div className={"flex flex-col items-center gap-3"}>
+                            {discardHand.length > 0 && <div className={"flex flex-row gap-3"}>
+                                <button
+                                    className={"border rounded p-2 hover:cursor-pointer"}
+                                onClick={discardLocal}>Discard</button>
+                                <button
+                                className={"border rounded p-2 hover:cursor-pointer"}
+                            onClick={resetLocalDiscardHand}>Cancel</button>
+                            </div>
+                            }
+                            <div className={"flex flex-row"}>
+                                <AnimatePresence>
+                                    {currhand.filter(card => card.state === "selected").map(card =>
+                                        <AnimatedCardItem key={card.id} card={card} deck={false} moveFunction={removeThisCard} layoutId={card.id.toString()}/>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className={"absolute bottom-4 w-full flex justify-center gap-3 min-h-[200px]"}>
+                    <div className={"h-1/3 w-full flex justify-center gap-3 min-h-[200px]"}>
                         <AnimatePresence>
                             {currhand.filter(card => card.state === "hand").map(card => (
-                                <AnimatedCardItem key={card.id} card={card} handleClick={addThisCard}/>
+                                <AnimatedCardItem key={card.id} card={card} deck={false} moveFunction={addThisCard} layoutId={card.id.toString()}/>
                             ))}
                         </AnimatePresence>
                     </div>
+                </LayoutGroup>
 
             </div>
     );
