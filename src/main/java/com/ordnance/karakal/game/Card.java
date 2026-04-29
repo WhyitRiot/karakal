@@ -4,8 +4,8 @@ import java.util.Comparator;
 
 public class Card {
     private final long id;
-    private final Suit suit;
     private final Rank rank;
+    private final Suit suit;
 
     public Suit getSuit() {
         return suit;

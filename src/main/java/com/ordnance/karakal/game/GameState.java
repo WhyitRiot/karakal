@@ -11,7 +11,7 @@ public class GameState {
     public UUID currentPlayer;
     public List<UUID> players;
     public TreeMap<UUID, Integer> leaderboard;
-    public DiscardAction lastPlay;
+    public DiscardActionSnap lastPlay;
     public boolean inProgress;
 
     public String toString(){

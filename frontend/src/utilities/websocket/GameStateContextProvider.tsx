@@ -14,6 +14,7 @@ import {doesNewCardContinueSuitedStraight} from "../cardBools.ts";
 import {createDrawMessage, type DrawMessage} from "./messages/DrawMessage.ts";
 import {createDiscardMessage} from "./messages/DiscardMessage.ts";
 import {createCallMessage} from "./messages/CallMessage.ts";
+import game from "../../pages/Game.tsx";
 
 export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
@@ -30,8 +31,26 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         {id: 55, rank: Rank.Ace, suit: Suit.Hearts, state: "discard"}
     ];
 
+    const rankMap: Record<string, Rank> = {
+        Joker: Rank.Joker,
+        Ace: Rank.Ace,
+        Two: Rank.Two,
+        Three: Rank.Three,
+        Four: Rank.Four,
+        Five: Rank.Five,
+        Six: Rank.Six,
+        Seven: Rank.Seven,
+        Eight: Rank.Eight,
+        Nine: Rank.Nine,
+        Ten: Rank.Ten,
+        Jack: Rank.Jack,
+        Queen: Rank.Queen,
+        King: Rank.King,
+    };
 
     //Multiplayer State
+
+
     const [playerName, setPlayerName] = useState<string | undefined>(undefined);
     const [playerId, setPlayerId] = useState<string | undefined>(undefined);
     const [gameId, setGameId] = useState<string | undefined>(undefined);
@@ -46,13 +65,34 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     }
 
     //Client-side state
-    const [tableCards, setTableCards] = useState<Card[]>(hand);
+
+    const [tableCards, setTableCards] = useState<Card[]>([]);
     const [discardHand, setDiscardHand] = useState<Card[]>([]);
     const [pickedUpCard, setPickedUpCard] = useState<boolean>(false);
-
     const pickUpCard = () => {
         setPickedUpCard(true);
     }
+
+    // const mapRank = (card : Card) => ({
+    //     ...card,
+    //     rank: rankMap[card.rank]
+    // })
+
+    const mapTableCards = () : void => {
+        if (!playerState || !gameState) return;
+        const cards: Card[] = [...playerState.hand.map(card => ({...card, rank: rankMap[card.rank], state: "hand" as const})),
+            ...gameState.lastPlay.cards.map(card => ({...card, rank: rankMap[card.rank], state: "discard" as const})),
+            {id: 999, rank: Rank.Ace, suit: Suit.Spades, state: "deck"}
+        ]
+        console.log("Logging:", cards);
+        setTableCards(cards);
+    }
+
+    useEffect(() => {
+        if (gameState && playerState){
+            mapTableCards()
+        }
+    }, [gameState, playerState])
 
     const resetDiscardHand = () => {
         setDiscardHand([]);
@@ -87,14 +127,15 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
             onConnect: (frame: IFrame) => {
                 setConnected(true);
                 client.subscribe(gameCreatedUrl, (msg: IMessage) => {
-                    console.log(msg.body)
-                    setGameId(msg.body);
+                    console.log("Game Created:", msg.body)
+                    setGameId(JSON.parse(msg.body));
                 });
                 client.subscribe(newPlayer, (msg : IMessage) => {
-                    setPlayerId(msg.body);
+                    console.log("New Player:", msg.body);
+                    setPlayerId(JSON.parse(msg.body));
                 })
                 client.subscribe(playerStateEndPoint, (msg: IMessage) => {
-                    console.log(msg.body)
+                    console.log("Player state:", msg.body)
                     setPlayerState(JSON.parse(msg.body));
                 })
             }
@@ -111,6 +152,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     useEffect(() =>{
         if (!gameId || !client) return;
         const sub : StompSubscription = client.subscribe(`${gameEndPoint}${gameId}`, (msg : IMessage) =>{
+            console.log("Setting state:", msg.body);
             setGameState(JSON.parse(msg.body));
         })
         return () => {sub.unsubscribe()}

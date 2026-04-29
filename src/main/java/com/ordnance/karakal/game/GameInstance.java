@@ -50,7 +50,10 @@ public class GameInstance {
         snapshot.discardSize = this.discard.size();
         snapshot.players = this.players;
         snapshot.leaderboard = this.leaderboard;
-        snapshot.lastPlay = this.lastPlay;
+        snapshot.lastPlay = new DiscardActionSnap(this.lastPlay.playerId);
+        for (long id : this.lastPlay.cardIds){
+            snapshot.lastPlay.cards.add(cardMap.get(id));
+        }
         snapshot.inProgress = this.started;
         return snapshot;
     }

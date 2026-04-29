@@ -1,3 +1,5 @@
+import type {Card} from "../../card.ts";
+
 export type GameState = {
     gameId : string
     deckSize : number,
@@ -7,7 +9,7 @@ export type GameState = {
     leaderboard : Map<string, number>
     lastPlay : {
         playerId : string,
-        cardIds : number[]
+        cards : Card[]
     }
     inProgress : boolean
 }

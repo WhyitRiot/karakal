@@ -1,8 +1,10 @@
+import type {Card} from "../../card.ts";
+
 export type PlayerState = {
     userId : string,
     name : string,
     score : number,
-    hand : number[]
+    hand : Card[]
 }
 
 /*

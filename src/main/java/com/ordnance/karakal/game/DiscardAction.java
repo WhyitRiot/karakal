@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class DiscardAction {
-    private UUID playerId;
+    public UUID playerId;
     List<Long> cardIds;
 
     public DiscardAction(UUID playerId, List<Long> cardIds) {
