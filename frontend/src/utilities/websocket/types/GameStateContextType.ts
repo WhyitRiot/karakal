@@ -15,6 +15,8 @@ export type GameStateContextType = {
 
     discardHand : Card[]
     tableCards: Card[]
+    pickedUpCard : boolean
+    pickUpCard: () => void;
 
     addCard : (card : Card) => void
     removeCard : (card: Card) => void

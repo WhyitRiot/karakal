@@ -1,38 +1,59 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import CardItem from "../components/CardItem.tsx";
-import {type Card} from "../utilities/card.ts"
+import {type Card, type CardState} from "../utilities/card.ts"
 import {Rank} from "../utilities/rank.ts";
 import {Suit} from "../utilities/suit.ts"
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
-import {getCardStyling} from "../utilities/cardImages.ts";
-import {LayoutGroup, AnimatePresence} from "framer-motion";
+import {cardBacks, getCardStyling} from "../utilities/cardImages.ts";
+import {LayoutGroup, AnimatePresence, motion} from "framer-motion";
 import {AnimatedCardItem} from "../components/AnimatedCardItem.tsx";
-import {doesNewCardContinueSuitedStraight, isNewCardSameRank} from "../utilities/cardBools.ts";
+import {doesNewCardContinueSuitedStraight, isNewCardSameRank, validateEntireHand} from "../utilities/cardBools.ts";
+import AnimatedDeckPile from "../components/AnimatedDeckPile.tsx";
 
-const hand : Card[] = [
-    {id: 1, rank: Rank.Joker, suit: undefined, state: "hand" },
-    {id: 4,  rank: Rank.Ten, suit: Suit.Spades, state: "hand" },
-    {id: 7, rank: Rank.King, suit: Suit.Diamonds, state: "hand" },
-    {id: 8, rank: Rank.Queen, suit: Suit.Clubs, state: "hand" },
-    {id: 14, rank: Rank.Joker, suit: undefined, state: "hand" },
-    {id: 15, rank: Rank.Nine, suit: Suit.Spades, state: "hand" },
-    {id: 43, rank: Rank.Eight, suit: Suit.Diamonds, state: "hand" },
-    {id: 66, rank: Rank.Ace, suit: Suit.Diamonds, state: "deck"}
-];
+const MAX_VISIBLE_LAYERS = 10;
 
 const Game = () => {
     const context = useContext(GameStateContext);
     if (!context) throw Error("outside of provider!");
-    const{discardHand, tableCards, addCard, removeCard, discard, resetDiscardHand} = context;
+    const{discardHand, tableCards, addCard, removeCard, discard, resetDiscardHand, pickedUpCard, pickUpCard} = context;
+    const deckSize = 40;
     const[currhand, setCurrHand] = useState<Card[]>(tableCards);
+    const[layers, setLayers] = useState(Math.min(MAX_VISIBLE_LAYERS, Math.ceil(deckSize/5)));
+
+    useEffect(()=>{
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setLayers(Math.min(MAX_VISIBLE_LAYERS, Math.ceil(deckSize / 5)));
+    }, [deckSize])
+
+    const stageLocal = () => {
+        if (!validateEntireHand(discardHand)) return;
+        setCurrHand(prev => prev.map(c => c.state === "selected" ? {...c, state: "staged"}: c))
+        discard();
+    }
 
     const discardLocal = () => {
-        setCurrHand(prev => prev.map(c => c.state === "selected" ? {...c, state: "discard"}: c))
-        discard();
+        setCurrHand(prev => {
+            const staged : Card[] = prev.filter(c => c.state === "staged");
+            const rest: Card[] = prev.filter(c => c.state !== "staged");
+
+            return [
+                ...rest,
+                ...staged.map(c => ({ ...c, state: "discard" as CardState }))
+            ];
+        });
+    }
+
+    const selectFromDiscardLocal = (card : Card) => {
+        if (pickedUpCard) return;
+        //TODO add logic for adding card from context to local hand
+        setCurrHand(prev => prev.map(c => c.id === card.id ? {...c, state: "hand"} : c));
+        pickUpCard();
+        discardLocal();
     }
 
     const drawFromDeck = (card : Card) =>{
         setCurrHand(prev => prev.map(c => c.id === card.id ? {...c, state: "hand"} : c))
+        discardLocal();
     }
 
     const resetLocalDiscardHand = () => {
@@ -62,37 +83,75 @@ const Game = () => {
 
                         <div className={"h-1/3 w-full flex items-center justify-center ml-2 mr-2 gap-10"}>
                             <div className={"w-1/4 flex flex-col items-center border rounded-3xl"}>
-                                <div className={"h-48 flex flex-col items-center"}>
-                                    <div className={"relative w-32 h-48 flex flex-row justify-center"}>
-                                        <AnimatePresence>
-                                            {currhand.filter(card => card.state === "discard").map(card =>
-                                                <AnimatedCardItem key={card.id} card={card} deck={false} layoutId={card.id.toString()}/>
-                                            )}
-                                        </AnimatePresence>
-                                    </div>
-                                </div>
+                                <motion.div
+                                    className="relative w-32 h-48"
+                                    initial="rest"
+                                    whileHover="hover"
+                                >
+                                    {/*Discard*/}
+                                    <AnimatePresence>
+                                        {currhand
+                                            .filter(card => card.state === "discard")
+                                            .map((card, index, array) => {
+                                                return (
+                                                    <AnimatedDeckPile key={card.id} totalCards={array.length} card={card} index={index}>
+                                                        <AnimatedCardItem
+                                                            card={card}
+                                                            deck={false}
+                                                            selectable={false}
+                                                            moveFunction={() => {
+                                                                /* Optional: Logic to pick card from discard */
+                                                                selectFromDiscardLocal(card);
+                                                                console.log("Selected from discard:", card.rank);
+                                                            }}
+                                                        />
+                                                    </AnimatedDeckPile>
+                                                );
+                                            })
+                                        }
+                                    </AnimatePresence>
+                                </motion.div>
                                 <h2>Discard</h2>
                             </div>
+                            {/*Deck*/}
                             <div className={"w-1/4 flex flex-col items-center border rounded-3xl"}>
                                 <div className={"h-48 flex flex-col items-center"}>
                                     <div className={"relative w-32 h-48 flex flex-row justify-center"}>
-                                        <AnimatePresence>
-                                            {currhand.filter(card => card.state === "deck").map(card =>
-                                                <AnimatedCardItem key={card.id} card={card} deck={true} moveFunction={drawFromDeck} layoutId={card.id.toString()}/>
-                                            )}
-                                        </AnimatePresence>
+                                        <div className="absolute inset-0">
+                                            {Array.from({ length: layers }).map((_, i) => (
+                                                <div
+                                                    key={i}
+                                                    className="absolute rounded shadow-md"
+                                                    style={{
+                                                        top: i * 0.6,
+                                                        left: i * 0.6,
+                                                        zIndex: i
+                                                    }}
+                                                >
+                                                    <img src={cardBacks.cardBack} alt="back"/>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className={"relative z-50"}>
+                                            <AnimatePresence>
+                                                {currhand.filter(card => card.state === "deck").map(card =>
+                                                    <AnimatedCardItem key={card.id} card={card} deck={true} selectable={true} moveFunction={drawFromDeck} layoutId={card.id.toString()}/>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
                                     </div>
                                 </div>
                                 <h2>Deck</h2>
                             </div>
                         </div>
 
+                    {/*Hand*/}
                     <div className={"h-1/3 w-full flex items-center justify-center"}>
                         <div className={"flex flex-col items-center gap-3"}>
                             {discardHand.length > 0 && <div className={"flex flex-row gap-3"}>
                                 <button
                                     className={"border rounded p-2 hover:cursor-pointer"}
-                                onClick={discardLocal}>Discard</button>
+                                onClick={stageLocal}>Discard</button>
                                 <button
                                 className={"border rounded p-2 hover:cursor-pointer"}
                             onClick={resetLocalDiscardHand}>Cancel</button>
@@ -100,8 +159,13 @@ const Game = () => {
                             }
                             <div className={"flex flex-row"}>
                                 <AnimatePresence>
+                                    {currhand.filter(card => card.state === "staged").map(card =>
+                                        <AnimatedCardItem key={card.id} card={card} deck={false} selectable={false} layoutId={card.id.toString()}/>
+                                    )}
+                                </AnimatePresence>
+                                <AnimatePresence>
                                     {currhand.filter(card => card.state === "selected").map(card =>
-                                        <AnimatedCardItem key={card.id} card={card} deck={false} moveFunction={removeThisCard} layoutId={card.id.toString()}/>
+                                        <AnimatedCardItem key={card.id} card={card} deck={false} selectable={false} moveFunction={removeThisCard} layoutId={card.id.toString()}/>
                                     )}
                                 </AnimatePresence>
                             </div>
@@ -111,7 +175,7 @@ const Game = () => {
                     <div className={"h-1/3 w-full flex justify-center gap-3 min-h-[200px]"}>
                         <AnimatePresence>
                             {currhand.filter(card => card.state === "hand").map(card => (
-                                <AnimatedCardItem key={card.id} card={card} deck={false} moveFunction={addThisCard} layoutId={card.id.toString()}/>
+                                <AnimatedCardItem key={card.id} card={card} deck={false} selectable={true} moveFunction={addThisCard} layoutId={card.id.toString()}/>
                             ))}
                         </AnimatePresence>
                     </div>

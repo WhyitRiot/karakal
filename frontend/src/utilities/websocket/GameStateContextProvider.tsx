@@ -10,6 +10,10 @@ import {createStartMessage} from "./messages/StartMessage.ts";
 import type {Card} from "../card.ts";
 import {Rank} from "../rank.ts";
 import {Suit} from "../suit.ts";
+import {doesNewCardContinueSuitedStraight} from "../cardBools.ts";
+import {createDrawMessage, type DrawMessage} from "./messages/DrawMessage.ts";
+import {createDiscardMessage} from "./messages/DiscardMessage.ts";
+import {createCallMessage} from "./messages/CallMessage.ts";
 
 export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
@@ -17,12 +21,13 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const hand : Card[] = [
         {id: 1, rank: Rank.Joker, suit: undefined, state: "hand" },
         {id: 4,  rank: Rank.Ten, suit: Suit.Spades, state: "hand" },
-        {id: 7, rank: Rank.King, suit: Suit.Diamonds, state: "hand" },
-        {id: 8, rank: Rank.Queen, suit: Suit.Clubs, state: "hand" },
+        {id: 7, rank: Rank.Eight, suit: Suit.Spades, state: "hand" },
+        {id: 8, rank: Rank.Queen, suit: Suit.Spades, state: "hand" },
         {id: 14, rank: Rank.Joker, suit: undefined, state: "hand" },
         {id: 15, rank: Rank.Nine, suit: Suit.Spades, state: "hand" },
         {id: 43, rank: Rank.Eight, suit: Suit.Diamonds, state: "hand" },
-        {id: 66, rank: Rank.Ace, suit: Suit.Diamonds, state: "deck"}
+        {id: 66, rank: Rank.Ace, suit: Suit.Diamonds, state: "deck"},
+        {id: 55, rank: Rank.Ace, suit: Suit.Hearts, state: "discard"}
     ];
 
 
@@ -43,13 +48,21 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     //Client-side state
     const [tableCards, setTableCards] = useState<Card[]>(hand);
     const [discardHand, setDiscardHand] = useState<Card[]>([]);
+    const [pickedUpCard, setPickedUpCard] = useState<boolean>(false);
+
+    const pickUpCard = () => {
+        setPickedUpCard(true);
+    }
 
     const resetDiscardHand = () => {
         setDiscardHand([]);
     }
 
     const addCard = (card : Card) => {
-        setDiscardHand(prev => [...prev, card]);
+        setDiscardHand(prev => [...prev, card].sort((a,b) => {
+            if (a.rank === Rank.Joker || b.rank === Rank.Joker) return 0;
+            return a.rank -b.rank
+        }));
     }
 
     const removeCard = (card : Card) => {
@@ -59,6 +72,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const URL = "ws://localhost:8080/karakal";
     const gameCreatedUrl = "/user/queue/karakal-created";
     const newPlayer = "/user/queue/new-player";
+    const playerStateEndPoint = "/user/queue/player-state";
     const endPoint = "/app/play";
     const gameEndPoint = "/game/"
 
@@ -78,6 +92,10 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
                 });
                 client.subscribe(newPlayer, (msg : IMessage) => {
                     setPlayerId(msg.body);
+                })
+                client.subscribe(playerStateEndPoint, (msg: IMessage) => {
+                    console.log(msg.body)
+                    setPlayerState(JSON.parse(msg.body));
                 })
             }
         })
@@ -122,10 +140,38 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         })
     }
 
+    const drawAction = (gameId : string, type : string, playerId : string, cardId? : number)=> {
+        let drawMessage;
+        switch (type){
+            case "DECK": drawMessage = createDrawMessage(gameId, "DECK", playerId); break;
+            case "DISCARD" : drawMessage = createDrawMessage(gameId, "DISCARD", playerId, cardId); break;
+        }
+        client.publish({
+            destination: endPoint,
+            body: JSON.stringify(drawMessage)
+        })
+    }
+
+    const discardAction = (gameId : string, playerId : string, cardIds:number[])=>{
+        const discardMessage = createDiscardMessage(gameId, playerId, cardIds);
+        client.publish({
+            destination: endPoint,
+            body: JSON.stringify(discardMessage)
+        })
+    }
+
+    const callAction = (gameId : string, playerId : string) =>{
+        const callMessage = createCallMessage(gameId, playerId);
+        client.publish({
+            destination: endPoint,
+            body: JSON.stringify(callMessage)
+        })
+    }
+
     return (
         <GameStateContext.Provider value={{
-            playerName, playerId, gameId, gameState, playerState, client, connected, discardHand, tableCards,
-            discard, removeCard, addCard, setName, resetDiscardHand, createGame, joinGame, startGame
+            playerName, playerId, gameId, gameState, playerState, client, connected, discardHand, tableCards, pickedUpCard,
+            discard, pickUpCard, removeCard, addCard, setName, resetDiscardHand, createGame, joinGame, startGame
         }}>
             {children}
         </GameStateContext.Provider>
