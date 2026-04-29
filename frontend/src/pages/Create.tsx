@@ -1,17 +1,25 @@
 import React, {useContext, useEffect} from 'react';
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
+import {useNavigate} from "react-router";
 
 const Create = () => {
     const context = useContext(GameStateContext);
     if (!context){
         throw Error("outside of provider!");
     }
-    const {gameId, createGame} = context;
+    const {gameId, playerName, createGame, joinGame} = context;
+    const navigate = useNavigate();
     useEffect(()=>{
         if (!gameId) {
             createGame();
         }
-    })
+    }, [gameId, createGame, joinGame])
+
+    const handleJoin = () => {
+        if (!gameId || !playerName) return;
+        joinGame(gameId, playerName);
+        navigate("/game")
+    }
     return (
 
         <>
@@ -23,7 +31,10 @@ const Create = () => {
                         <p className={"text-2xl text-amber-500"}>{gameId}
                         </p>
                         <p className={"text-2xl"}>Share with your friends!</p>
-                        <button className={"text-5xl w-2/3 border rounded hover:bg-blue-400/50 hover:cursor-pointer"}>Join
+                        <button
+
+                            onClick={handleJoin}
+                            className={"disabled:bg-gray-400 text-5xl w-2/3 border rounded hover:bg-blue-400/50 hover:cursor-pointer"}>Join
                         </button>
                     </div>
 

@@ -11,8 +11,7 @@ function App() {
     <>
         <GameStateProvider>
             <BrowserRouter>
-                {/*<SiteRoutes/>*/}
-                <Game />
+                <SiteRoutes/>
             </BrowserRouter>
         </GameStateProvider>
     </>

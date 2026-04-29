@@ -17,8 +17,11 @@ const Game = () => {
     if (!context) throw Error("outside of provider!");
     const{discardHand, tableCards, addCard, removeCard, discard, resetDiscardHand, pickedUpCard, pickUpCard} = context;
     const deckSize = 40;
-    const[currhand, setCurrHand] = useState<Card[]>(tableCards);
+    const[currTableCards, setCurrTableCards] = useState<Card[]>(tableCards);
     const[layers, setLayers] = useState(Math.min(MAX_VISIBLE_LAYERS, Math.ceil(deckSize/5)));
+    useEffect(()=>{
+        setCurrTableCards(tableCards)
+    }, [tableCards])
 
     useEffect(()=>{
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -27,12 +30,12 @@ const Game = () => {
 
     const stageLocal = () => {
         if (!validateEntireHand(discardHand)) return;
-        setCurrHand(prev => prev.map(c => c.state === "selected" ? {...c, state: "staged"}: c))
+        setCurrTableCards(prev => prev.map(c => c.state === "selected" ? {...c, state: "staged"}: c))
         discard();
     }
 
     const discardLocal = () => {
-        setCurrHand(prev => {
+        setCurrTableCards(prev => {
             const staged : Card[] = prev.filter(c => c.state === "staged");
             const rest: Card[] = prev.filter(c => c.state !== "staged");
 
@@ -46,30 +49,30 @@ const Game = () => {
     const selectFromDiscardLocal = (card : Card) => {
         if (pickedUpCard) return;
         //TODO add logic for adding card from context to local hand
-        setCurrHand(prev => prev.map(c => c.id === card.id ? {...c, state: "hand"} : c));
+        setCurrTableCards(prev => prev.map(c => c.id === card.id ? {...c, state: "hand"} : c));
         pickUpCard();
         discardLocal();
     }
 
     const drawFromDeck = (card : Card) =>{
-        setCurrHand(prev => prev.map(c => c.id === card.id ? {...c, state: "hand"} : c))
+        setCurrTableCards(prev => prev.map(c => c.id === card.id ? {...c, state: "hand"} : c))
         discardLocal();
     }
 
     const resetLocalDiscardHand = () => {
-        setCurrHand(prev => prev.map(c => c.state === "selected" ? {...c, state: "hand"} : c))
+        setCurrTableCards(prev => prev.map(c => c.state === "selected" ? {...c, state: "hand"} : c))
         resetDiscardHand();
     }
 
     const removeThisCard = (card : Card) => {
         removeCard(card);
-        setCurrHand(prev => prev.map(c => c.id === card.id ? {...c, state: "hand"} : c))
+        setCurrTableCards(prev => prev.map(c => c.id === card.id ? {...c, state: "hand"} : c))
     }
 
     const addThisCard = (card : Card) => {
         if (isNewCardSameRank(discardHand, card) || doesNewCardContinueSuitedStraight(discardHand, card)){
             addCard(card);
-            setCurrHand(prev => prev.map(c => c.id === card.id ? {...c, state: "selected"} : c))
+            setCurrTableCards(prev => prev.map(c => c.id === card.id ? {...c, state: "selected"} : c))
         }
     }
     return (
@@ -90,7 +93,7 @@ const Game = () => {
                                 >
                                     {/*Discard*/}
                                     <AnimatePresence>
-                                        {currhand
+                                        {currTableCards
                                             .filter(card => card.state === "discard")
                                             .map((card, index, array) => {
                                                 return (
@@ -134,7 +137,7 @@ const Game = () => {
                                         </div>
                                         <div className={"relative z-50"}>
                                             <AnimatePresence>
-                                                {currhand.filter(card => card.state === "deck").map(card =>
+                                                {currTableCards.filter(card => card.state === "deck").map(card =>
                                                     <AnimatedCardItem key={card.id} card={card} deck={true} selectable={true} moveFunction={drawFromDeck} layoutId={card.id.toString()}/>
                                                 )}
                                             </AnimatePresence>
@@ -159,12 +162,12 @@ const Game = () => {
                             }
                             <div className={"flex flex-row"}>
                                 <AnimatePresence>
-                                    {currhand.filter(card => card.state === "staged").map(card =>
+                                    {currTableCards.filter(card => card.state === "staged").map(card =>
                                         <AnimatedCardItem key={card.id} card={card} deck={false} selectable={false} layoutId={card.id.toString()}/>
                                     )}
                                 </AnimatePresence>
                                 <AnimatePresence>
-                                    {currhand.filter(card => card.state === "selected").map(card =>
+                                    {currTableCards.filter(card => card.state === "selected").map(card =>
                                         <AnimatedCardItem key={card.id} card={card} deck={false} selectable={false} moveFunction={removeThisCard} layoutId={card.id.toString()}/>
                                     )}
                                 </AnimatePresence>
@@ -174,7 +177,7 @@ const Game = () => {
 
                     <div className={"h-1/3 w-full flex justify-center gap-3 min-h-[200px]"}>
                         <AnimatePresence>
-                            {currhand.filter(card => card.state === "hand").map(card => (
+                            {currTableCards.filter(card => card.state === "hand").map(card => (
                                 <AnimatedCardItem key={card.id} card={card} deck={false} selectable={true} moveFunction={addThisCard} layoutId={card.id.toString()}/>
                             ))}
                         </AnimatePresence>
