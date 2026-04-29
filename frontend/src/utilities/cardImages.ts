@@ -154,7 +154,7 @@ export const Clubs = {
 };
 
 export const getCardStyling = (card : Card) =>{
-    if (card.suit === undefined){
+    if (card.suit === undefined || card.suit === null){
         return Jokers["jokerOne"];
     }
     let imgObject;
