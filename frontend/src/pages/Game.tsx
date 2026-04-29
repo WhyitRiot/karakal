@@ -103,7 +103,6 @@ const Game = () => {
                                                             deck={false}
                                                             selectable={false}
                                                             moveFunction={() => {
-                                                                /* Optional: Logic to pick card from discard */
                                                                 selectFromDiscardLocal(card);
                                                                 console.log("Selected from discard:", card.rank);
                                                             }}

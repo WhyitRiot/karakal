@@ -1,5 +1,6 @@
 package com.ordnance.karakal.websocket;
 
+import com.ordnance.karakal.game.Card;
 import com.ordnance.karakal.game.GameInstance;
 import com.ordnance.karakal.game.GameState;
 import com.ordnance.karakal.game.PlayerState;
@@ -30,6 +31,10 @@ public class GameService {
         UUID gameId = UUID.randomUUID();
         this.games.put(gameId, new GameInstance(Id));
         return gameId;
+    }
+
+    public Card getLastCardFromDeck(UUID gameId){
+        return this.games.get(gameId).getLastCardFromDeck();
     }
 
     public void addPlayer(UUID gameId, String playerName, UUID playerId){

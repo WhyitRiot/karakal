@@ -1,7 +1,7 @@
 import {Suit} from "./suit.ts"
 import {Rank} from "./rank.ts"
 
-export type CardState = "hand" | "selected" | "discard" | "deck" | "staged"
+export type CardState = "hand" | "selected" | "discard" | "deck" | "staged" | "drawing"
 
 export type Card = {
     id : number

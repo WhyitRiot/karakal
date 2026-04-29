@@ -24,6 +24,7 @@ public class GameInstance {
     private boolean finalRound;
     private boolean started;
     private List<Long> discard;
+    private Long lastCardDrawnFromDeck;
 
     public GameInstance(String gameId){
         this.gameId = gameId;
@@ -35,6 +36,7 @@ public class GameInstance {
         this.leaderboard = new TreeMap<>();
         this.players = new ArrayList<>();
         this.deck = shuffleDeck(this.cardMap);
+        this.lastCardDrawnFromDeck = null;
         this.discard = new ArrayList<>();
         this.finalRound = false;
         ArrayList<Long> firstDiscard = new ArrayList<>();
@@ -117,8 +119,13 @@ public class GameInstance {
 
     public void drawFromDeck(){
         Player player = playerMap.get(this.currentPlayer);
-        player.getHand().add(this.deck.pop());
+        this.lastCardDrawnFromDeck = this.deck.pop();
+        player.getHand().add(this.lastCardDrawnFromDeck);
         nextTurn();
+    }
+
+    public Card getLastCardFromDeck(){
+        return this.cardMap.get(this.lastCardDrawnFromDeck);
     }
 
     public void resetDeck(){

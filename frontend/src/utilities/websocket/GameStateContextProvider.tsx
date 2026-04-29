@@ -59,6 +59,25 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [client, setClient] = useState<Client>(new Client());
     const [connected, setConnected] = useState(false);
 
+    const queueFlipToHand = (cardId: number) => {
+        setTimeout(()=>{
+            setTableCards(prev => prev.map(c => c.id === cardId ? {...c, state: "hand"} : c))
+        }, 200)
+    }
+
+    const handleDrawFromDeck = (card : Card) => {
+        setTableCards(prev => [
+            ...prev,
+            {
+                id: card.id,
+                rank: rankMap[card.id],
+                suit: card.suit,
+                state: "deck"
+            }
+        ])
+        queueFlipToHand(card.id);
+    }
+
     const discard = () => {
         // TODO add discard server call
         resetDiscardHand()
@@ -73,19 +92,41 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         setPickedUpCard(true);
     }
 
-    // const mapRank = (card : Card) => ({
-    //     ...card,
-    //     rank: rankMap[card.rank]
-    // })
-
     const mapTableCards = () : void => {
         if (!playerState || !gameState) return;
-        const cards: Card[] = [...playerState.hand.map(card => ({...card, rank: rankMap[card.rank], state: "hand" as const})),
-            ...gameState.lastPlay.cards.map(card => ({...card, rank: rankMap[card.rank], state: "discard" as const})),
-            {id: 999, rank: Rank.Ace, suit: Suit.Spades, state: "deck"}
-        ]
-        console.log("Logging:", cards);
-        setTableCards(cards);
+        setTableCards(prev => {
+            const map = new Map(prev.map(card => [card.id, card]));
+            const nextIds = new Set<number>();
+            //Player Hand
+            for (const card of playerState.hand){
+                const existing = map.get(card.id);
+
+                map.set(card.id, {
+                    ...existing,
+                    ...card,
+                    rank: rankMap[card.rank],
+                    state: existing?.state === "drawing" ? existing.state : "hand"
+                })
+                nextIds.add(card.id);
+            }
+            //Discard
+            for (const card of gameState.lastPlay.cards){
+                const existing = map.get(card.id);
+                map.set(card.id, {
+                    ...existing,
+                    ...card,
+                    rank: rankMap[card.rank],
+                    state: "discard"
+                })
+                nextIds.add(card.id);
+            }
+            for (const id of map.keys()){
+                if (!nextIds.has(id)){
+                    map.delete(id);
+                }
+            }
+            return Array.from(map.values());
+        })
     }
 
     useEffect(() => {
@@ -93,6 +134,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
             mapTableCards()
         }
     }, [gameState, playerState])
+
 
     const resetDiscardHand = () => {
         setDiscardHand([]);
@@ -113,6 +155,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const gameCreatedUrl = "/user/queue/karakal-created";
     const newPlayer = "/user/queue/new-player";
     const playerStateEndPoint = "/user/queue/player-state";
+    const drawEndPoint = "/user/queue/draw";
     const endPoint = "/app/play";
     const gameEndPoint = "/game/"
 
@@ -155,7 +198,11 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
             console.log("Setting state:", msg.body);
             setGameState(JSON.parse(msg.body));
         })
-        return () => {sub.unsubscribe()}
+        const drawSub : StompSubscription = client.subscribe(drawEndPoint, (msg : IMessage) => {
+            console.log("Draw card:", msg.body);
+            handleDrawFromDeck(JSON.parse(msg.body));
+        })
+        return () => {sub.unsubscribe(); drawSub.unsubscribe()}
     }, [client, gameId])
 
     const createGame = () => {
@@ -213,7 +260,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     return (
         <GameStateContext.Provider value={{
             playerName, playerId, gameId, gameState, playerState, client, connected, discardHand, tableCards, pickedUpCard,
-            discard, pickUpCard, removeCard, addCard, setName, resetDiscardHand, createGame, joinGame, startGame
+            discard, pickUpCard, setTableCards, removeCard, addCard, setName, resetDiscardHand, createGame, joinGame, startGame
         }}>
             {children}
         </GameStateContext.Provider>

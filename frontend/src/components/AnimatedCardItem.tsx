@@ -45,7 +45,7 @@ export function AnimatedCardItem ({card, deck, selectable, moveFunction, ...moti
     }
 
     const handleFlip = async () => {
-        setIsFlipped(!isFlipped);
+        setIsFlipped(false);
         setTimeout(()=>{
             if (!moveFunction) return;
             moveFunction(card);

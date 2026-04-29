@@ -2,6 +2,7 @@ import type {GameState} from "./GameState.ts";
 import type {PlayerState} from "./PlayerState.ts";
 import {Client} from "@stomp/stompjs";
 import type {Card} from "../../card.ts";
+import type {Dispatch, SetStateAction} from "react";
 
 export type GameStateContextType = {
     playerName : string | undefined
@@ -15,6 +16,7 @@ export type GameStateContextType = {
 
     discardHand : Card[]
     tableCards: Card[]
+    setTableCards: Dispatch<SetStateAction<Card[]>>
     pickedUpCard : boolean
     pickUpCard: () => void;
 
