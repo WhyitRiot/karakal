@@ -20,6 +20,10 @@ export function AnimatedCardItem ({card, deck, selectable, discardHand, moveFunc
     const [isFlipped, setIsFlipped] = useState(deck);
 
     useEffect(()=>{
+        if (deck && moveFunction){
+            moveFunction(card);
+            return;
+        }
         if (!selectable) return;
         let modeBool : boolean;
         const mode = getHandMode(discardHand);

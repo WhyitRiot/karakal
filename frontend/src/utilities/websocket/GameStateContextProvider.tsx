@@ -15,6 +15,7 @@ import {createDrawMessage, type DrawMessage} from "./messages/DrawMessage.ts";
 import {createDiscardMessage} from "./messages/DiscardMessage.ts";
 import {createCallMessage} from "./messages/CallMessage.ts";
 import game from "../../pages/Game.tsx";
+import join from "../../pages/Join.tsx";
 
 export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
@@ -164,14 +165,17 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     }
 
     const joinGame = (gameId : string, playerName : string) => {
+        if (!gameId) return;
         const joinMessage = createJoinMessage(gameId, playerName);
+        console.log(joinMessage);
         client.publish({
             destination: endPoint,
             body: JSON.stringify(joinMessage)
         })
     }
 
-    const startGame = (gameId : string) => {
+    const startGame = () => {
+        if (!gameId) return;
         const startMessage = createStartMessage(gameId);
         client.publish({
             destination: endPoint,
@@ -179,19 +183,23 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         })
     }
 
-    const drawAction = (gameId : string, type : string, playerId : string, cardId? : number)=> {
+    const drawAction = (type : string, cardId? : number)=> {
+        if (!gameId || !playerId) return;
         let drawMessage;
         switch (type){
-            case "DECK": drawMessage = createDrawMessage(gameId, "DECK", playerId); break;
+            case "DECK":
+                drawMessage = createDrawMessage(gameId, "DECK", playerId); break;
             case "DISCARD" : drawMessage = createDrawMessage(gameId, "DISCARD", playerId, cardId); break;
         }
+        console.log(drawMessage);
         client.publish({
             destination: endPoint,
             body: JSON.stringify(drawMessage)
         })
     }
 
-    const discardAction = (gameId : string, playerId : string, cardIds:number[])=>{
+    const discardAction = (cardIds:number[])=>{
+        if (!gameId || !playerId) return;
         const discardMessage = createDiscardMessage(gameId, playerId, cardIds);
         client.publish({
             destination: endPoint,
@@ -199,7 +207,8 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         })
     }
 
-    const callAction = (gameId : string, playerId : string) =>{
+    const callAction = () =>{
+        if (!gameId || !playerId) return;
         const callMessage = createCallMessage(gameId, playerId);
         client.publish({
             destination: endPoint,
@@ -210,7 +219,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     return (
         <GameStateContext.Provider value={{
             playerName, playerId, gameId, gameState, playerState, client, connected, tableCards,
-            setTableCards, setName, createGame, joinGame, startGame
+            drawAction, discardAction, callAction, setTableCards, setName, createGame, joinGame, startGame
         }}>
             {children}
         </GameStateContext.Provider>

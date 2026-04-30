@@ -19,8 +19,11 @@ export type GameStateContextType = {
     setName : (name : string) => void;
 
     createGame : () => void,
-    joinGame: (gameId : string, playerName : string) => void
-    startGame : (gameId : string) => void
+    joinGame: (gameId: string, playerName : string) => void
+    startGame : () => void
+    drawAction : (type: string, cardId? : number) => void;
+    discardAction : (cardIds : number[]) => void;
+    callAction : () => void;
 
     //selectCardFromDiscard,discardCard,selectCard, stageCard
 }

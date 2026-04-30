@@ -20,7 +20,7 @@ const MAX_VISIBLE_LAYERS = 10;
 const Game = () => {
     const context = useContext(GameStateContext);
     if (!context) throw Error("outside of provider!");
-    const{tableCards, setTableCards} = context;
+    const{tableCards, setTableCards, discardAction, drawAction, callAction} = context;
     const deckSize = 40;
     const[layers, setLayers] = useState(Math.min(MAX_VISIBLE_LAYERS, Math.ceil(deckSize/5)));
 
@@ -59,12 +59,8 @@ const Game = () => {
     }
 
     const discard = () => {
-        // TODO add discard server call
+        discardAction(discardHand.map(card => card.id));
         resetDiscardHand()
-    }
-
-    const removeCard = (card : Card) => {
-        setDiscardHand(prev => prev.filter(prevCard => prevCard.id != card.id))
     }
 
     useEffect(()=>{
@@ -77,7 +73,6 @@ const Game = () => {
         if (!validateEntireHand(discardHand)) return;
         console.log(discardHand);
         discardHand.forEach(card => moveCardToStage(card.id));
-        console.log("staged");
     }
 
     const moveSelectedCardsToDiscard = () => {
@@ -89,15 +84,15 @@ const Game = () => {
     const drawFromDiscard = (card : Card) => {
         if (pickedUpCard) return;
         //TODO add logic for adding card from context to local hand
-        moveCardToHand(card.id);
         pickUpCard();
         moveSelectedCardsToDiscard()
+        drawAction("DISCARD", card.id);
     }
 
-    const drawFromDeck = (card : Card) =>{
-        moveCardToHand(card.id);
+    const drawFromDeck = () =>{
         pickUpCard();
         moveSelectedCardsToDiscard()
+        drawAction("DECK");
     }
 
     const resetLocalDiscardHand = () => {
@@ -108,6 +103,10 @@ const Game = () => {
     const removeThisCard = (card : Card) => {
         moveCardToHand(card.id);
         discardHand.filter(c => c.id != card.id);
+    }
+
+    const removeFromDeck = (card : Card) =>{
+        moveCardToHand(card.id);
     }
 
     const addThisCard = (card : Card) => {
@@ -170,6 +169,7 @@ const Game = () => {
                                                         left: i * 0.6,
                                                         zIndex: i
                                                     }}
+                                                    onClick={drawFromDeck}
 
                                                 >
                                                     <img src={cardBacks.cardBack} alt="back"/>
@@ -178,7 +178,7 @@ const Game = () => {
                                         </div>
                                         <div className={"relative z-50"}>
                                                 {tableCards.filter(card => card.state === "deck").map(card =>
-                                                    <AnimatedCardItem key={card.id} card={card} deck={true} selectable={true} discardHand={discardHand} moveFunction={drawFromDeck} layoutId={card.id.toString()}/>
+                                                    <AnimatedCardItem key={card.id} card={card} deck={true} selectable={true} discardHand={discardHand} moveFunction={removeFromDeck} layoutId={card.id.toString()}/>
                                                 )}
                                         </div>
                                     </div>
