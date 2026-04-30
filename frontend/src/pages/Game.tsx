@@ -14,15 +14,18 @@ import {
     validateEntireHand
 } from "../utilities/cardBools.ts";
 import AnimatedDeckPile from "../components/AnimatedDeckPile.tsx";
+import StartGameModal from "../components/StartGameModal.tsx";
 
 const MAX_VISIBLE_LAYERS = 10;
 
 const Game = () => {
     const context = useContext(GameStateContext);
     if (!context) throw Error("outside of provider!");
-    const{tableCards, setTableCards, discardAction, drawAction, callAction} = context;
+    const{tableCards, setTableCards, discardAction, drawAction, callAction, playAction} = context;
     const deckSize = 40;
     const[layers, setLayers] = useState(Math.min(MAX_VISIBLE_LAYERS, Math.ceil(deckSize/5)));
+
+    const[isOpen, setIsOpen] = useState<boolean>(true);
 
     const [discardHand, setDiscardHand] = useState<Card[]>([]);
     const [pickedUpCard, setPickedUpCard] = useState<boolean>(false);
@@ -59,12 +62,10 @@ const Game = () => {
     }
 
     const discard = () => {
-        discardAction(discardHand.map(card => card.id));
         resetDiscardHand()
     }
 
     useEffect(()=>{
-        console.log(tableCards);
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setLayers(Math.min(MAX_VISIBLE_LAYERS, Math.ceil(deckSize / 5)));
     }, [deckSize, tableCards])
@@ -78,21 +79,26 @@ const Game = () => {
     const moveSelectedCardsToDiscard = () => {
         if (!discardHand) return;
         discardHand.forEach(card => moveCardToDiscard(card.id));
-        discard();
     }
 
-    const drawFromDiscard = (card : Card) => {
+    const drawFromDiscard = async (card : Card) => {
         if (pickedUpCard) return;
         //TODO add logic for adding card from context to local hand
         pickUpCard();
-        moveSelectedCardsToDiscard()
-        drawAction("DISCARD", card.id);
+        //moveSelectedCardsToDiscard()
+        // drawAction("DISCARD", card.id);
+        playAction(discardHand.map(card => card.id), "DISCARD", card.id);
+        setPickedUpCard(false);
+        discard();
     }
 
-    const drawFromDeck = () =>{
+    const drawFromDeck = async () =>{
         pickUpCard();
-        moveSelectedCardsToDiscard()
-        drawAction("DECK");
+        //moveSelectedCardsToDiscard()
+        // drawAction("DECK");
+        playAction(discardHand.map(card => card.id), "DECK")
+        setPickedUpCard(false);
+        discard();
     }
 
     const resetLocalDiscardHand = () => {
@@ -116,6 +122,7 @@ const Game = () => {
     }
     return (
             <div className={"relative w-screen h-screen overflow-hidden"}>
+                <StartGameModal isVisible={isOpen} setIsVisible={setIsOpen}/>
                 <LayoutGroup>
 
                     <div className={"absolute top-4 w-full flex flex-row justify-center gap-5"}>

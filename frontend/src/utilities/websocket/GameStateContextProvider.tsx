@@ -16,6 +16,7 @@ import {createDiscardMessage} from "./messages/DiscardMessage.ts";
 import {createCallMessage} from "./messages/CallMessage.ts";
 import game from "../../pages/Game.tsx";
 import join from "../../pages/Join.tsx";
+import {createPlayMessage, type PlayMessage} from "./messages/PlayMessage.ts";
 
 export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
@@ -207,6 +208,20 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         })
     }
 
+    const playAction = (cardIds : number[], drawType: string, cardId? : number) => {
+        if (!gameId || !playerId) return;
+        let playMessage;
+        switch(drawType){
+            case "DECK": playMessage = createPlayMessage(gameId, playerId, drawType, cardIds); break;
+            case "DISCARD" : playMessage = createPlayMessage(gameId, playerId, drawType, cardIds, cardId)
+        }
+        console.log(playMessage);
+        client.publish({
+            destination: endPoint,
+            body: JSON.stringify(playMessage)
+        })
+    }
+
     const callAction = () =>{
         if (!gameId || !playerId) return;
         const callMessage = createCallMessage(gameId, playerId);
@@ -219,7 +234,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     return (
         <GameStateContext.Provider value={{
             playerName, playerId, gameId, gameState, playerState, client, connected, tableCards,
-            drawAction, discardAction, callAction, setTableCards, setName, createGame, joinGame, startGame
+            drawAction, discardAction, callAction, playAction, setTableCards, setName, createGame, joinGame, startGame
         }}>
             {children}
         </GameStateContext.Provider>

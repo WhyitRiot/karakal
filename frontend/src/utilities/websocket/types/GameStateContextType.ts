@@ -23,6 +23,7 @@ export type GameStateContextType = {
     startGame : () => void
     drawAction : (type: string, cardId? : number) => void;
     discardAction : (cardIds : number[]) => void;
+    playAction : (cardIds : number[], drawType: string, cardId? : number) => void;
     callAction : () => void;
 
     //selectCardFromDiscard,discardCard,selectCard, stageCard
