@@ -152,6 +152,7 @@ public class GameInstance {
     public void calculateScore(UUID uuid){
         Player player = playerMap.get(uuid);
         int score = 0;
+        List<Long> handSnapshot = player.getHand();
         for (long id: player.getHand()){
             score += cardMap.get(id).getRank().getValue();
         }
