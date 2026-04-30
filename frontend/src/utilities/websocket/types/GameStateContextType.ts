@@ -12,20 +12,15 @@ export type GameStateContextType = {
     playerState : PlayerState | undefined,
     client : Client,
     connected : boolean
-    discard: () => void;
 
-    discardHand : Card[]
     tableCards: Card[]
     setTableCards: Dispatch<SetStateAction<Card[]>>
-    pickedUpCard : boolean
-    pickUpCard: () => void;
 
-    addCard : (card : Card) => void
-    removeCard : (card: Card) => void
-    setName : (name: string) => void
-    resetDiscardHand : () => void;
+    setName : (name : string) => void;
 
     createGame : () => void,
     joinGame: (gameId : string, playerName : string) => void
     startGame : (gameId : string) => void
+
+    //selectCardFromDiscard,discardCard,selectCard, stageCard
 }

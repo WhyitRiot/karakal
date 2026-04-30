@@ -11,14 +11,11 @@ type CardProps = {
     card: Card,
     deck : boolean,
     selectable : boolean,
+    discardHand : Card[],
     moveFunction? : (card: Card) => void;
 } & HTMLMotionProps<"div">
 
-export function AnimatedCardItem ({card, deck, selectable, moveFunction, ...motionProps} : CardProps){
-    const context = useContext(GameStateContext);
-
-    if (!context) throw Error("outside of provider!");
-    const {discardHand, addCard, removeCard} = context;
+export function AnimatedCardItem ({card, deck, selectable, discardHand, moveFunction, ...motionProps} : CardProps){
     const [canSelect, setCanSelect] = useState((isNewCardSameRank(discardHand, card) || doesNewCardContinueSuitedStraight(discardHand, card)));
     const [isFlipped, setIsFlipped] = useState(deck);
 
@@ -56,6 +53,7 @@ export function AnimatedCardItem ({card, deck, selectable, moveFunction, ...moti
         <div className={"w-32 h-48 perspective-[1000px] rounded"}>
             <motion.div
                 layout
+                layoutId={card.id.toString()}
                 initial={{ rotateY: deck ? 180 : 0 }}
                 animate={{
                     opacity: canSelect || deck ? 1 : 0.5,

@@ -10,7 +10,6 @@ const AnimatedDeckPile = ({card, totalCards, index, children} : {card :Card, tot
     return (
         <motion.div
             key={card.id}
-            layoutId={card.id.toString()}
             className="absolute inset-0"
             style={{ zIndex: index }}
             variants={{

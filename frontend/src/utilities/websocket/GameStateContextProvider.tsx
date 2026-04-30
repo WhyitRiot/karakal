@@ -7,7 +7,7 @@ import {GameStateContext} from "./GameStateContext.tsx";
 import {createCreateMessage} from "./messages/CreateMessage.ts";
 import {createJoinMessage} from "./messages/JoinMessage.ts";
 import {createStartMessage} from "./messages/StartMessage.ts";
-import type {Card} from "../card.ts";
+import {type Card, rankMap} from "../card.ts";
 import {Rank} from "../rank.ts";
 import {Suit} from "../suit.ts";
 import {doesNewCardContinueSuitedStraight} from "../cardBools.ts";
@@ -31,26 +31,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         {id: 55, rank: Rank.Ace, suit: Suit.Hearts, state: "discard"}
     ];
 
-    const rankMap: Record<string, Rank> = {
-        Joker: Rank.Joker,
-        Ace: Rank.Ace,
-        Two: Rank.Two,
-        Three: Rank.Three,
-        Four: Rank.Four,
-        Five: Rank.Five,
-        Six: Rank.Six,
-        Seven: Rank.Seven,
-        Eight: Rank.Eight,
-        Nine: Rank.Nine,
-        Ten: Rank.Ten,
-        Jack: Rank.Jack,
-        Queen: Rank.Queen,
-        King: Rank.King,
-    };
-
     //Multiplayer State
-
-
     const [playerName, setPlayerName] = useState<string | undefined>(undefined);
     const [playerId, setPlayerId] = useState<string | undefined>(undefined);
     const [gameId, setGameId] = useState<string | undefined>(undefined);
@@ -59,38 +40,9 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [client, setClient] = useState<Client>(new Client());
     const [connected, setConnected] = useState(false);
 
-    const queueFlipToHand = (cardId: number) => {
-        setTimeout(()=>{
-            setTableCards(prev => prev.map(c => c.id === cardId ? {...c, state: "hand"} : c))
-        }, 200)
-    }
-
-    const handleDrawFromDeck = (card : Card) => {
-        setTableCards(prev => [
-            ...prev,
-            {
-                id: card.id,
-                rank: rankMap[card.id],
-                suit: card.suit,
-                state: "deck"
-            }
-        ])
-        queueFlipToHand(card.id);
-    }
-
-    const discard = () => {
-        // TODO add discard server call
-        resetDiscardHand()
-    }
-
     //Client-side state
 
     const [tableCards, setTableCards] = useState<Card[]>([]);
-    const [discardHand, setDiscardHand] = useState<Card[]>([]);
-    const [pickedUpCard, setPickedUpCard] = useState<boolean>(false);
-    const pickUpCard = () => {
-        setPickedUpCard(true);
-    }
 
     const mapTableCards = () : void => {
         if (!playerState || !gameState) return;
@@ -129,27 +81,25 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         })
     }
 
+    const spawnCardInDeck = (card : Card) => {
+        setTableCards(prev => [
+            ...prev,
+            {
+                id: card.id,
+                rank: rankMap[card.id],
+                suit: card.suit,
+                state: "deck"
+            }
+        ])
+    }
+
     useEffect(() => {
         if (gameState && playerState){
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             mapTableCards()
         }
     }, [gameState, playerState])
 
-
-    const resetDiscardHand = () => {
-        setDiscardHand([]);
-    }
-
-    const addCard = (card : Card) => {
-        setDiscardHand(prev => [...prev, card].sort((a,b) => {
-            if (a.rank === Rank.Joker || b.rank === Rank.Joker) return 0;
-            return a.rank -b.rank
-        }));
-    }
-
-    const removeCard = (card : Card) => {
-        setDiscardHand(prev => prev.filter(prevCard => prevCard.id != card.id))
-    }
 
     const URL = "ws://localhost:8080/karakal";
     const gameCreatedUrl = "/user/queue/karakal-created";
@@ -200,7 +150,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         })
         const drawSub : StompSubscription = client.subscribe(drawEndPoint, (msg : IMessage) => {
             console.log("Draw card:", msg.body);
-            handleDrawFromDeck(JSON.parse(msg.body));
+            spawnCardInDeck(JSON.parse(msg.body));
         })
         return () => {sub.unsubscribe(); drawSub.unsubscribe()}
     }, [client, gameId])
@@ -259,8 +209,8 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
     return (
         <GameStateContext.Provider value={{
-            playerName, playerId, gameId, gameState, playerState, client, connected, discardHand, tableCards, pickedUpCard,
-            discard, pickUpCard, setTableCards, removeCard, addCard, setName, resetDiscardHand, createGame, joinGame, startGame
+            playerName, playerId, gameId, gameState, playerState, client, connected, tableCards,
+            setTableCards, setName, createGame, joinGame, startGame
         }}>
             {children}
         </GameStateContext.Provider>

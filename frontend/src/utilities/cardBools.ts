@@ -1,6 +1,13 @@
 import type {Card} from "./card.ts";
 import {Rank} from "./rank.ts"
 
+
+export const isValidSelection = (hand : Card[], card : Card) => {
+    return (
+        isNewCardSameRank(hand, card) || doesNewCardContinueSuitedStraight(hand, card)
+    )
+}
+
 export const validateEntireHand = (discard : Card[]) : boolean => {
     if (discard.length === 1) return true;
     let isStraight: boolean = true;
