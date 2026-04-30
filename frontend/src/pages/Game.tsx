@@ -83,10 +83,7 @@ const Game = () => {
 
     const drawFromDiscard = async (card : Card) => {
         if (pickedUpCard) return;
-        //TODO add logic for adding card from context to local hand
         pickUpCard();
-        //moveSelectedCardsToDiscard()
-        // drawAction("DISCARD", card.id);
         playAction(discardHand.map(card => card.id), "DISCARD", card.id);
         setPickedUpCard(false);
         discard();
@@ -94,8 +91,6 @@ const Game = () => {
 
     const drawFromDeck = async () =>{
         pickUpCard();
-        //moveSelectedCardsToDiscard()
-        // drawAction("DECK");
         playAction(discardHand.map(card => card.id), "DECK")
         setPickedUpCard(false);
         discard();
