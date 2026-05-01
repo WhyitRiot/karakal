@@ -9,7 +9,7 @@ const Join = () => {
     const context = useContext(GameStateContext);
     if (!context) throw Error("outside of context!");
     const navigate = useNavigate();
-    const {joinGame, playerName} = context;
+    const {joinGame, setGameId, playerName} = context;
     const joinSchema = yup.object({
         gameId: yup.string().matches(
             /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/,
@@ -27,6 +27,7 @@ const Join = () => {
         console.log(parsedSchema);
         reset()
         if (!playerName) return;
+        setGameId(parsedSchema.gameId);
         joinGame(parsedSchema.gameId, playerName);
         navigate("/game")
     }
