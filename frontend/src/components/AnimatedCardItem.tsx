@@ -5,6 +5,7 @@ import {useContext, useEffect, useState} from "react";
 import {doesNewCardContinueSuitedStraight, isNewCardSameRank, getHandMode, type HandMode} from "../utilities/cardBools.ts";
 import back from "../assets/cards/blue-back.jpg"
 import {getCardStyling} from "../utilities/cardImages.ts";
+import Game from "../pages/Game.tsx";
 
 
 type CardProps = {
@@ -16,6 +17,9 @@ type CardProps = {
 } & HTMLMotionProps<"div">
 
 export function AnimatedCardItem ({card, deck, selectable, discardHand, moveFunction, ...motionProps} : CardProps){
+    const context = useContext(GameStateContext);
+    if (!context) throw Error("outside provider!");
+    const {isMyTurn} = context;
     const [canSelect, setCanSelect] = useState((isNewCardSameRank(discardHand, card) || doesNewCardContinueSuitedStraight(discardHand, card)));
     const [isFlipped, setIsFlipped] = useState(deck);
 
@@ -27,10 +31,14 @@ export function AnimatedCardItem ({card, deck, selectable, discardHand, moveFunc
         if (!selectable) return;
         let modeBool : boolean;
         const mode = getHandMode(discardHand);
-        switch (mode){
-            case "unknown" : modeBool = (isNewCardSameRank(discardHand, card) || doesNewCardContinueSuitedStraight(discardHand, card)); break;
-            case "sameRank" : modeBool = (isNewCardSameRank(discardHand, card)); break;
-            case "straight" : modeBool = (doesNewCardContinueSuitedStraight(discardHand, card));
+        if (isMyTurn){
+            switch (mode){
+                case "unknown" : modeBool = (isNewCardSameRank(discardHand, card) || doesNewCardContinueSuitedStraight(discardHand, card)); break;
+                case "sameRank" : modeBool = (isNewCardSameRank(discardHand, card)); break;
+                case "straight" : modeBool = (doesNewCardContinueSuitedStraight(discardHand, card));
+            }
+        }else{
+            modeBool = false;
         }
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setCanSelect(modeBool)
