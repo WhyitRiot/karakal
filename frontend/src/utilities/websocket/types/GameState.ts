@@ -5,7 +5,7 @@ export type GameState = {
     deckSize : number,
     discardSize : number,
     currentPlayer : string | undefined,
-    players : Map<string, string>,
+    players : {[id: string]: string}
     leaderboard : Map<string, number>
     lastPlay : {
         playerId : string,

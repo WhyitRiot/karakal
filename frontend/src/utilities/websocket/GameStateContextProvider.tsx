@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {type GameState} from './types/GameState.ts'
 import {type PlayerState} from './types/PlayerState.ts'
 import {Client, type IFrame, type IMessage, type StompSubscription} from '@stomp/stompjs'
@@ -44,7 +44,8 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
     const [currentPlayerName, setCurrentPlayerName] = useState<string | undefined>();
     const [score, setScore] = useState<number>(0);
-    const [client, setClient] = useState<Client>(new Client());
+    // const [client, setClient] = useState<Client>(new Client());
+    const clientRef = useRef<Client | null>(null);
     const [connected, setConnected] = useState(false);
 
     //Client-side state
@@ -99,7 +100,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
             }
         ])
     }
-
+    // Game State update loop
     useEffect(() => {
         if (gameState && playerState){
             // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -108,7 +109,6 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
             setIsGameStarted(gameState.inProgress);
             setIsMyTurn(gameState.currentPlayer === playerId);
             if (gameState.currentPlayer){
-                // @ts-ignore
                 setCurrentPlayerName(gameState.players[gameState.currentPlayer])
             }
             setScore(playerState.score);
@@ -132,6 +132,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     useEffect(() =>{
         const client = new Client({
             brokerURL: URL,
+            reconnectDelay: 5000,
             onConnect: (frame: IFrame) => {
                 setConnected(true);
                 client.subscribe(gameCreatedUrl, (msg: IMessage) => {
@@ -143,7 +144,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
                     setPlayerId(JSON.parse(msg.body));
                 })
                 client.subscribe(playerStateEndPoint, (msg: IMessage) => {
-                    console.log("Player state:", msg.body)
+                    console.log("Player state:", msg.body);
                     setPlayerState(JSON.parse(msg.body));
                 })
             }
@@ -151,54 +152,54 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
         client.activate();
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setClient(client);
+        clientRef.current = client;
 
         return () => {client.deactivate()};
     }, [])
 
     //On game creation
     useEffect(() =>{
-        if (!gameId || !client) return;
-        const sub : StompSubscription = client.subscribe(`${gameEndPoint}${gameId}`, (msg : IMessage) =>{
+        if (!gameId || !clientRef.current) return;
+        const sub : StompSubscription = clientRef.current.subscribe(`${gameEndPoint}${gameId}`, (msg : IMessage) =>{
             console.log("Setting state:", msg.body);
             setGameState(JSON.parse(msg.body));
         })
-        const drawSub : StompSubscription = client.subscribe(drawEndPoint, (msg : IMessage) => {
+        const drawSub : StompSubscription = clientRef.current.subscribe(drawEndPoint, (msg : IMessage) => {
             console.log("Draw card:", msg.body);
             spawnCardInDeck(JSON.parse(msg.body));
         })
         return () => {sub.unsubscribe(); drawSub.unsubscribe()}
-    }, [client, gameId])
+    }, [clientRef, gameId])
 
     const createGame = () => {
         const createMessage = createCreateMessage();
-        client.publish({
+        clientRef.current.publish({
             destination: endPoint,
             body: JSON.stringify(createMessage)
         })
     }
 
     const joinGame = (gameId : string, playerName : string) => {
-        if (!gameId) return;
+        if (!gameId || !clientRef.current) return;
         const joinMessage = createJoinMessage(gameId, playerName);
         console.log(joinMessage);
-        client.publish({
+        clientRef.current.publish({
             destination: endPoint,
             body: JSON.stringify(joinMessage)
         })
     }
 
     const startGame = () => {
-        if (!gameId) return;
+        if (!gameId || !clientRef.current) return;
         const startMessage = createStartMessage(gameId);
-        client.publish({
+        clientRef.current.publish({
             destination: endPoint,
             body: JSON.stringify(startMessage)
         })
     }
 
     const drawAction = (type : string, cardId? : number)=> {
-        if (!gameId || !playerId) return;
+        if (!gameId || !playerId || !clientRef.current) return;
         let drawMessage;
         switch (type){
             case "DECK":
@@ -206,39 +207,39 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
             case "DISCARD" : drawMessage = createDrawMessage(gameId, "DISCARD", playerId, cardId); break;
         }
         console.log(drawMessage);
-        client.publish({
+        clientRef.current.publish({
             destination: endPoint,
             body: JSON.stringify(drawMessage)
         })
     }
 
     const discardAction = (cardIds:number[])=>{
-        if (!gameId || !playerId) return;
+        if (!gameId || !playerId || !clientRef.current) return;
         const discardMessage = createDiscardMessage(gameId, playerId, cardIds);
-        client.publish({
+        clientRef.current.publish({
             destination: endPoint,
             body: JSON.stringify(discardMessage)
         })
     }
 
     const playAction = (cardIds : number[], drawType: string, cardId? : number) => {
-        if (!gameId || !playerId) return;
+        if (!gameId || !playerId || !clientRef.current) return;
         let playMessage;
         switch(drawType){
             case "DECK": playMessage = createPlayMessage(gameId, playerId, drawType, cardIds); break;
             case "DISCARD" : playMessage = createPlayMessage(gameId, playerId, drawType, cardIds, cardId)
         }
         console.log(playMessage);
-        client.publish({
+        clientRef.current.publish({
             destination: endPoint,
             body: JSON.stringify(playMessage)
         })
     }
 
     const callAction = () =>{
-        if (!gameId || !playerId) return;
+        if (!gameId || !playerId || !clientRef.current) return;
         const callMessage = createCallMessage(gameId, playerId);
-        client.publish({
+        clientRef.current.publish({
             destination: endPoint,
             body: JSON.stringify(callMessage)
         })
@@ -246,7 +247,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
     return (
         <GameStateContext.Provider value={{
-            playerName, playerId, gameId, gameState, playerState, client, connected, tableCards, isHost, isGameStarted, isMyTurn, currentPlayerName, score,
+            playerName, playerId, gameId, gameState, playerState, connected, tableCards, isHost, isGameStarted, isMyTurn, currentPlayerName, score,
             setGameId, drawAction, discardAction, callAction, playAction, setTableCards, setName, createGame, joinGame, startGame
         }}>
             {children}

@@ -16,7 +16,6 @@ export type GameStateContextType = {
     isMyTurn : boolean,
     currentPlayerName : string | undefined,
     score: number,
-    client : Client,
     connected : boolean
 
     tableCards: Card[]
