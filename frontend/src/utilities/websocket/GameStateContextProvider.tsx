@@ -39,6 +39,11 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [gameId, setGameId] = useState<string | undefined>(undefined);
     const [gameState, setGameState] = useState<GameState | undefined>(undefined);
     const [playerState, setPlayerState] = useState<PlayerState | undefined>(undefined);
+    const [isHost, setIsHost] = useState<boolean>(false);
+    const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
+    const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
+    const [currentPlayerName, setCurrentPlayerName] = useState<string | undefined>();
+    const [score, setScore] = useState<number>(0);
     const [client, setClient] = useState<Client>(new Client());
     const [connected, setConnected] = useState(false);
 
@@ -99,6 +104,14 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         if (gameState && playerState){
             // eslint-disable-next-line react-hooks/set-state-in-effect
             mapTableCards()
+            setIsHost(gameState.host === playerId);
+            setIsGameStarted(gameState.inProgress);
+            setIsMyTurn(gameState.currentPlayer === playerId);
+            if (gameState.currentPlayer){
+                // @ts-ignore
+                setCurrentPlayerName(gameState.players[gameState.currentPlayer])
+            }
+            setScore(playerState.score);
         }
     }, [gameState, playerState])
 
@@ -233,8 +246,8 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
     return (
         <GameStateContext.Provider value={{
-            playerName, playerId, gameId, gameState, playerState, client, connected, tableCards,
-            drawAction, discardAction, callAction, playAction, setTableCards, setName, createGame, joinGame, startGame
+            playerName, playerId, gameId, gameState, playerState, client, connected, tableCards, isHost, isGameStarted, isMyTurn, currentPlayerName, score,
+            setGameId, drawAction, discardAction, callAction, playAction, setTableCards, setName, createGame, joinGame, startGame
         }}>
             {children}
         </GameStateContext.Provider>

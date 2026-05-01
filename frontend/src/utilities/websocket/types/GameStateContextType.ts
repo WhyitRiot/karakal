@@ -8,8 +8,14 @@ export type GameStateContextType = {
     playerName : string | undefined
     playerId: string | undefined
     gameId : string | undefined,
+    setGameId : (gameId : string) => void;
     gameState : GameState | undefined,
     playerState : PlayerState | undefined,
+    isHost : boolean,
+    isGameStarted : boolean,
+    isMyTurn : boolean,
+    currentPlayerName : string | undefined,
+    score: number,
     client : Client,
     connected : boolean
 
