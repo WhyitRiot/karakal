@@ -1,7 +1,7 @@
 import {Suit} from "./suit.ts"
 import {Rank} from "./rank.ts"
 import {useState} from "react";
-import type {GameState} from "./websocket/types/GameState.ts";
+import type {GameState} from "../websocket/types/GameState.ts";
 
 export type CardState = "hand" | "selected" | "discard" | "deck" | "staged" | "drawing"
 
