@@ -1,30 +1,51 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
+import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
 
-const WiatForYourTurnModal = ({waiting, player} : {waiting: boolean, player : string | undefined}) => {
+const RoundOverModal = ({roundOver} : {roundOver: boolean}) => {
+    const context = useContext(GameStateContext);
+    if (!context) throw Error("outside of provider!");
+    const {leaderboard, isHost, nextRoundAction} = context;
     const [isExiting, setIsExiting] = useState(false);
-    const [isVisible, setIsVisible] = useState(!waiting);
+    const [isVisible, setIsVisible] = useState(roundOver);
 
     useEffect(()=>{
-        if (waiting){
+        if (!roundOver){
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsExiting(true);
         }
-    }, [waiting])
+    }, [roundOver])
 
     return (
-        <div className={`fixed inset-0 ${isVisible ? `z-50` : `-z-1`} flex h-screen justify-center items-center}`}>
-            <div className={"absolute flex flex-col w-1/2 h-2/3"}>
+        <div className={`fixed inset-0 ${isVisible ? `z-50` : `-z-1`} flex h-screen justify-center items-center ${isVisible && 'backdrop-blur-md'}`}>
+            <div className={"absolute flex flex-col items-center justify-center w-1/2 h-2/3"}>
                 <div
-                      className={`flex flex-col items-center w-full h-full justify-around ${isVisible ? (isExiting ? 'animate-fade-out' : 'animate-fade-in') : 'translate-y-full opacity-0'}`}
+                      className={`flex flex-col items-center w-full h-full justify-evenly bg-gray-400 rounded-4xl ${isVisible ? (isExiting ? 'animate-fade-out' : 'animate-fade-in') : 'translate-y-full opacity-0'}`}
                       onAnimationEnd={() => {
                           if (isExiting) setIsVisible(false);
                       }}
                 >
-                    <p className={"text-5xl"}>{`${player}'s turn...`}</p>
+                    <p className={"text-5xl self-center"}>Round Over!</p>
+                    <div className={"flex flex-col gap-5 w-2/3"}>
+                        <p className={"text-4xl self-center"}>Scores</p>
+                        <table className={"text-3xl w-full"}>
+                            {leaderboard && leaderboard.map((item, index) => (
+                                <tr key={index} className={"border-b"}>
+                                    <td>{item.name}</td>
+                                    <td>{item.score}</td>
+                                </tr>
+                            ))}
+                        </table>
+                    </div>{ isHost ?
+                    <button onClick={nextRoundAction} className={"text-3xl border rounded p-2 hover:bg-green-400 hover:cursor-pointer"}>Start next round!</button>
+                    :
+                    <div className={"flex flex-row justify-center w-2/3"}>
+                        <p className={"text-3xl text-center"}>Waiting for host to start the next round...</p>
+                    </div>
+                }
                 </div>
             </div>
         </div>
     );
 };
 
-export default WiatForYourTurnModal;
+export default RoundOverModal;
