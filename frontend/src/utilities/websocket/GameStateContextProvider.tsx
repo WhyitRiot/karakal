@@ -7,9 +7,9 @@ import {GameStateContext} from "./GameStateContext.tsx";
 import {createCreateMessage} from "./messages/CreateMessage.ts";
 import {createJoinMessage} from "./messages/JoinMessage.ts";
 import {createStartMessage} from "./messages/StartMessage.ts";
-import {type Card, rankMap} from "../card.ts";
-import {Rank} from "../rank.ts";
-import {Suit} from "../suit.ts";
+import {type Card, rankMap} from "../types/card.ts";
+import {Rank} from "../types/rank.ts";
+import {Suit} from "../types/suit.ts";
 import {doesNewCardContinueSuitedStraight} from "../cardBools.ts";
 import {createDrawMessage, type DrawMessage} from "./messages/DrawMessage.ts";
 import {createDiscardMessage} from "./messages/DiscardMessage.ts";
@@ -44,7 +44,6 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
     const [currentPlayerName, setCurrentPlayerName] = useState<string | undefined>();
     const [score, setScore] = useState<number>(0);
-    // const [client, setClient] = useState<Client>(new Client());
     const clientRef = useRef<Client | null>(null);
     const [connected, setConnected] = useState(false);
 
@@ -172,6 +171,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     }, [clientRef, gameId])
 
     const createGame = () => {
+        if (!gameId || !clientRef.current) return;
         const createMessage = createCreateMessage();
         clientRef.current.publish({
             destination: endPoint,
@@ -254,11 +254,4 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         </GameStateContext.Provider>
     );
 
-    // playerName : string | undefined
-    // playerId: string | undefined
-    // gameId : string | undefined,
-    //     gameState : GameState | undefined,
-    //     playerState : PlayerState | undefined,
-    //     client : Client,
-    //     connected : boolean
 };

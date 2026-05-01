@@ -1,5 +1,5 @@
-import type {Card} from "./card.ts";
-import {Rank} from "./rank.ts"
+import type {Card} from "./types/card.ts";
+import {Rank} from "./types/rank.ts"
 
 
 export const isValidSelection = (hand : Card[], card : Card) => {

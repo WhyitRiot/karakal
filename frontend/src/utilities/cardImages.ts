@@ -59,10 +59,10 @@ import jackClub from "../assets/cards/jackClub.jpg"
 import queenClub from "../assets/cards/queenClub.jpg"
 import kingClub from "../assets/cards/kingClub.jpg"
 
-import {Rank} from "../utilities/rank.ts"
-import {type Card, getCardRank} from "./card.ts";
+import {Rank} from "./types/rank.ts"
+import {type Card, getCardRank} from "./types/card.ts";
 import React from "react";
-import {Suit} from "./suit.ts";
+import {Suit} from "./types/suit.ts";
 
 export const cardBacks = {
     cardBack: cardBack

@@ -1,4 +1,4 @@
-import type {Card} from "../../card.ts";
+import type {Card} from "../../types/card.ts";
 
 export type GameState = {
     gameId : string
