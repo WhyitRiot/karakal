@@ -168,6 +168,13 @@ public class GameInstance {
         nextTurn();
     }
 
+    public void startNextRound(){
+        if (!gameOver){
+            newRound();
+            this.finalRound = false;
+        }
+    }
+
     public void nextTurn(){
         calculateScore(currentPlayer);
         if (karakalPlayer == null){
@@ -176,9 +183,6 @@ public class GameInstance {
         } else if (karakalPlayer.equals(currentPlayer) && finalRound){
             calculateRoundScore();
             endRound();
-            if (!gameOver){
-                newRound();
-            }
         } else if (karakalPlayer != null){
             finalRound = true;
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size();

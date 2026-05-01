@@ -33,6 +33,10 @@ public class GameService {
         return gameId;
     }
 
+    public void startNextRound(UUID gameId){
+        this.games.get(gameId).startNextRound();
+    }
+
     public Card getLastCardFromDeck(UUID gameId){
         return this.games.get(gameId).getLastCardFromDeck();
     }
