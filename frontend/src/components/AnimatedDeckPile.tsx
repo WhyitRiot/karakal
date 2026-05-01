@@ -1,7 +1,6 @@
 import React from 'react';
-import {AnimatedCardItem} from "./AnimatedCardItem.tsx";
 import {motion} from "framer-motion";
-import type {Card} from "../utilities/card.ts";
+import type {Card} from "../utilities/types/card.ts";
 
 const AnimatedDeckPile = ({card, totalCards, index, children} : {card :Card, totalCards : number, index : number, children : React.ReactNode}) => {
     //Calculate the spread logic

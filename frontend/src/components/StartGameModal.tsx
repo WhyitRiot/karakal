@@ -1,7 +1,6 @@
 import React, {useContext, useState} from 'react';
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
 
-
 const StartGameModal = ({isVisible, setIsVisible} : {isVisible: boolean, setIsVisible : (bool : boolean) => void}) => {
     const context = useContext(GameStateContext);
     if (!context) throw Error ("outside of provider!")

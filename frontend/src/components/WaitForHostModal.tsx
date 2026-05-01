@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 
-
 const StartGameModal = ({waiting} : {waiting: boolean}) => {
 
     const [isExiting, setIsExiting] = useState(false);

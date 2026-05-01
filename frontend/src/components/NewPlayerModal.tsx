@@ -1,4 +1,4 @@
-import React, {type ChangeEvent, useState} from 'react';
+import React, {useState} from 'react';
 import * as yup from 'yup';
 import {type FieldValues, useForm} from "react-hook-form";
 import type {InferType} from "yup";

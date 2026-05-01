@@ -1,12 +1,10 @@
 import {motion, type HTMLMotionProps} from "framer-motion";
-import type {Card} from "../utilities/card.ts";
+import type {Card} from "../utilities/types/card.ts";
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
 import {useContext, useEffect, useState} from "react";
-import {doesNewCardContinueSuitedStraight, isNewCardSameRank, getHandMode, type HandMode} from "../utilities/cardBools.ts";
+import {doesNewCardContinueSuitedStraight, isNewCardSameRank, getHandMode} from "../utilities/cardBools.ts";
 import back from "../assets/cards/blue-back.jpg"
 import {getCardStyling} from "../utilities/cardImages.ts";
-import Game from "../pages/Game.tsx";
-
 
 type CardProps = {
     card: Card,

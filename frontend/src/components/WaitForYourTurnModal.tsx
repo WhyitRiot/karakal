@@ -1,6 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
-
+import React, {useEffect, useState} from 'react';
 
 const WiatForYourTurnModal = ({waiting, player} : {waiting: boolean, player : string | undefined}) => {
     const [isExiting, setIsExiting] = useState(false);
