@@ -1,6 +1,7 @@
 package com.ordnance.karakal.game;
 
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -9,14 +10,15 @@ public class GameState {
     public int deckSize;
     public int discardSize;
     public UUID currentPlayer;
-    public List<UUID> players;
+    public Map<UUID, String> players;
     public TreeMap<UUID, Integer> leaderboard;
     public DiscardActionSnap lastPlay;
     public boolean inProgress;
+    public UUID host;
 
     public String toString(){
         StringBuilder builder = new StringBuilder();
-        for (UUID id : players){
+        for (UUID id : players.keySet()){
             builder.append(id);
             builder.append(", ");
         }

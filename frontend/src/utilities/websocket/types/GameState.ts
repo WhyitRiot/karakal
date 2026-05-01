@@ -5,13 +5,14 @@ export type GameState = {
     deckSize : number,
     discardSize : number,
     currentPlayer : string | undefined,
-    players : string[] | undefined,
+    players : Map<string, string>,
     leaderboard : Map<string, number>
     lastPlay : {
         playerId : string,
         cards : Card[]
     }
-    inProgress : boolean
+    inProgress : boolean,
+    host: string
 }
 
 // public String gameId;
@@ -22,3 +23,4 @@ export type GameState = {
 // public TreeMap<UUID, Integer> leaderboard;
 // public DiscardAction lastPlay;
 // public boolean inProgress;
+// public UUID host;

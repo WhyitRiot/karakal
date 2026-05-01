@@ -50,13 +50,17 @@ public class GameInstance {
         snapshot.gameId = this.gameId;
         snapshot.deckSize = this.deck.size();
         snapshot.discardSize = this.discard.size();
-        snapshot.players = this.players;
+        snapshot.players = new HashMap<>();
+        for (UUID playerId : this.players){
+            snapshot.players.put(playerId, this.playerMap.get(playerId).getName());
+        }
         snapshot.leaderboard = this.leaderboard;
         snapshot.lastPlay = new DiscardActionSnap(this.lastPlay.playerId);
         for (long id : this.lastPlay.cardIds){
             snapshot.lastPlay.cards.add(cardMap.get(id));
         }
         snapshot.inProgress = this.started;
+        snapshot.host = this.players.getFirst();
         return snapshot;
     }
 
