@@ -1,19 +1,17 @@
-import React, {useContext, useState} from 'react';
-import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
+import React, {useEffect, useState} from 'react';
 
 
-const StartGameModal = ({isVisible, setIsVisible} : {isVisible: boolean, setIsVisible : (bool : boolean) => void}) => {
-    const context = useContext(GameStateContext);
-    if (!context) throw Error ("outside of provider!")
-
-    const {startGame} = context;
+const StartGameModal = ({waiting} : {waiting: boolean}) => {
 
     const [isExiting, setIsExiting] = useState(false);
+    const [isVisible, setIsVisible] = useState(!waiting);
 
-    const handleClose = () => {
-        startGame();
-        setIsExiting(true);
-    }
+    useEffect(()=>{
+        if (waiting){
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setIsExiting(true);
+        }
+    }, [waiting])
 
     return (
         <div className={`fixed inset-0 ${isVisible ? `z-50` : `-z-1`} flex h-screen justify-center items-center ${isVisible && 'backdrop-blur-md'}`}>
@@ -24,8 +22,7 @@ const StartGameModal = ({isVisible, setIsVisible} : {isVisible: boolean, setIsVi
                           if (isExiting) setIsVisible(false);
                       }}
                 >
-                    <label className={"text-5xl"} htmlFor={"nameInput"}>Start Game?</label>
-                    <button onClick={handleClose} className={"text-5xl border rounded-2xl w-1/3 p-4 hover:bg-green-400 hover:cursor-pointer"} type={"submit"}>Go!</button>
+                    <p className={"text-5xl"}>Waiting for Host</p>
                 </div>
             </div>
         </div>
