@@ -45,6 +45,10 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
     const [currentPlayerName, setCurrentPlayerName] = useState<string | undefined>();
     const [score, setScore] = useState<number>(0);
+    const [karakalPlayer, setKarakalPlayer] = useState<string | undefined>();
+    const [leaderboard, setLeaderboard] = useState<{name: string, score: number | string}[] | undefined>();
+    const [players, setPlayers] = useState<{[id: string]: string}>({});
+    const [roundOver, setRoundOver] = useState<boolean>(false);
     const clientRef = useRef<Client | null>(null);
     const [connected, setConnected] = useState(false);
 
@@ -112,6 +116,18 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
                 setCurrentPlayerName(gameState.players[gameState.currentPlayer])
             }
             setScore(playerState.score);
+            setKarakalPlayer(gameState.karakalPlayer);
+            console.log("Final round:", gameState.finalRound);
+            console.log("Round over: ", gameState.roundOver);
+            setRoundOver(gameState.roundOver);
+            setPlayers(gameState.players);
+            if (gameState.leaderboard && players){
+                const localLeader = Object.entries(gameState.leaderboard).map(([id, score]) =>({
+                    name: players[id],
+                    score
+                })).sort((a,b) => a.score - b.score);
+                setLeaderboard(localLeader);
+            }
         }
     }, [gameState, playerState])
 
@@ -153,6 +169,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         client.activate();
         // eslint-disable-next-line react-hooks/set-state-in-effect
         clientRef.current = client;
+        console.log(clientRef.current);
 
         return () => {client.deactivate()};
     }, [])
@@ -172,7 +189,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     }, [clientRef, gameId])
 
     const createGame = () => {
-        if (!gameId || !clientRef.current) return;
+        if (!clientRef.current) return;
         const createMessage = createCreateMessage();
         clientRef.current.publish({
             destination: endPoint,
@@ -257,7 +274,10 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
     return (
         <GameStateContext.Provider value={{
-            playerName, playerId, gameId, gameState, playerState, connected, tableCards, isHost, isGameStarted, isMyTurn, currentPlayerName, score,
+            playerName, playerId, gameId, gameState, playerState,
+            connected, tableCards, isHost, isGameStarted, isMyTurn,
+            currentPlayerName, score, karakalPlayer, leaderboard,
+            roundOver, players,
             setGameId, drawAction, discardAction, callAction, playAction, setTableCards, setName, createGame, joinGame, startGame, nextRoundAction
         }}>
             {children}

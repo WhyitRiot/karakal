@@ -2,7 +2,7 @@ import type {GameState} from "./GameState.ts";
 import type {PlayerState} from "./PlayerState.ts";
 import {Client} from "@stomp/stompjs";
 import type {Card} from "../../types/card.ts";
-import type {Dispatch, SetStateAction} from "react";
+import {type Dispatch, type SetStateAction, useState} from "react";
 
 export type GameStateContextType = {
     playerName : string | undefined
@@ -15,6 +15,10 @@ export type GameStateContextType = {
     isGameStarted : boolean,
     isMyTurn : boolean,
     currentPlayerName : string | undefined,
+    karakalPlayer : string | undefined,
+    leaderboard : {name: string, score: number | string}[]| undefined
+    players : {[id: string]: string}
+    roundOver : boolean,
     score: number,
     connected : boolean
 
@@ -33,4 +37,6 @@ export type GameStateContextType = {
     nextRoundAction : () => void;
 
     //selectCardFromDiscard,discardCard,selectCard, stageCard
+    // const [karakalPlayer, setKarakalPlayer] = useState<string | undefined>();
+    // const [leaderBoard, setLeaderBoard] = useState<{[id: string]: number | undefined}>({});
 }

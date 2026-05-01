@@ -13,13 +13,14 @@ import AnimatedDeckPile from "../components/AnimatedDeckPile.tsx";
 import StartGameModal from "../components/StartGameModal.tsx";
 import WaitForHostModal from "../components/WaitForHostModal.tsx";
 import WaitForYourTurnModal from "../components/WaitForYourTurnModal.tsx";
+import RoundOverModal from "../components/RoundOverModal.tsx";
 
 const MAX_VISIBLE_LAYERS = 10;
 
 const Game = () => {
     const context = useContext(GameStateContext);
     if (!context) throw Error("outside of provider!");
-    const{tableCards, setTableCards, playAction, callAction, isHost, isGameStarted, isMyTurn, currentPlayerName, score} = context;
+    const{tableCards, setTableCards, playAction, callAction, isHost, isGameStarted, isMyTurn, currentPlayerName, score, roundOver} = context;
     const deckSize = 40;
     const[layers, setLayers] = useState(Math.min(MAX_VISIBLE_LAYERS, Math.ceil(deckSize/5)));
 
@@ -118,10 +119,12 @@ const Game = () => {
         callAction();
     }
     return (
+        <>
+        { isHost ?
+                <StartGameModal isVisible={isOpen} setIsVisible={setIsOpen}/> : <WaitForHostModal waiting={isGameStarted}/>}
+    { (!isMyTurn && isGameStarted) && <WaitForYourTurnModal waiting={isMyTurn} player={currentPlayerName} />}
+    {roundOver && <RoundOverModal roundOver={roundOver}/>}
             <div className={"relative w-screen h-screen overflow-hidden"}>
-                { isHost ?
-                    <StartGameModal isVisible={isOpen} setIsVisible={setIsOpen}/> : <WaitForHostModal waiting={isGameStarted}/>}
-                { (!isMyTurn && isGameStarted) && <WaitForYourTurnModal waiting={isMyTurn} player={currentPlayerName} />}
                 <LayoutGroup>
                         <div className={"h-1/3 w-full flex items-center justify-center ml-2 mr-2 gap-10"}>
                             <div className={"w-1/4 flex flex-col items-center border rounded-3xl"}>
@@ -191,9 +194,6 @@ const Game = () => {
                     <div className={"h-1/3 w-full flex items-center justify-center"}>
                         <div className={"flex flex-col items-center gap-3"}>
                             {discardHand.length > 0 && <div className={"flex flex-row gap-3"}>
-                                {/*<button*/}
-                                {/*    className={"border rounded p-2 hover:cursor-pointer"}*/}
-                                {/*onClick={stageLocal}>Discard</button>*/}
                                 <button
                                 className={"border rounded p-2 hover:cursor-pointer"}
                             onClick={resetLocalDiscardHand}>Cancel</button>
@@ -222,6 +222,7 @@ const Game = () => {
                 </LayoutGroup>
 
             </div>
+        </>
     );
 };
 
