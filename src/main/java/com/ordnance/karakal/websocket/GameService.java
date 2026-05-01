@@ -27,6 +27,10 @@ public class GameService {
         return this.games.get(gameId).getPlayerState(playerId);
     }
 
+    public List<UUID> getAllPlayers(UUID gameId){
+        return this.games.get(gameId).getPlayers();
+    }
+
     public UUID createGame(String Id){
         UUID gameId = UUID.randomUUID();
         this.games.put(gameId, new GameInstance(Id));

@@ -22,6 +22,7 @@ public class GameInstance {
     private UUID currentPlayer;
     private UUID karakalPlayer;
     private boolean finalRound;
+    private boolean roundOver;
     private boolean started;
     private List<Long> discard;
     private Long lastCardDrawnFromDeck;
@@ -39,6 +40,7 @@ public class GameInstance {
         this.lastCardDrawnFromDeck = null;
         this.discard = new ArrayList<>();
         this.finalRound = false;
+        this.roundOver = false;
         ArrayList<Long> firstDiscard = new ArrayList<>();
         firstDiscard.add(this.deck.pop());
         this.lastPlay = new DiscardAction(null, firstDiscard);
@@ -61,6 +63,10 @@ public class GameInstance {
         }
         snapshot.inProgress = this.started;
         snapshot.host = this.players.getFirst();
+        snapshot.karakalPlayer = this.karakalPlayer;
+        snapshot.gameOver = this.gameOver;
+        snapshot.finalRound = this.finalRound;
+        snapshot.roundOver = this.roundOver;
         return snapshot;
     }
 
@@ -172,6 +178,7 @@ public class GameInstance {
         if (!gameOver){
             newRound();
             this.finalRound = false;
+            this.roundOver = false;
         }
     }
 
@@ -180,11 +187,11 @@ public class GameInstance {
         if (karakalPlayer == null){
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
             this.currentPlayer = players.get(currentPlayerIndex);
-        } else if (karakalPlayer.equals(currentPlayer) && finalRound){
+        } else if (this.karakalPlayer.equals(players.get((currentPlayerIndex + 1) % players.size())) && this.finalRound){
             calculateRoundScore();
             endRound();
         } else if (karakalPlayer != null){
-            finalRound = true;
+            this.finalRound = true;
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
             this.currentPlayer = players.get(currentPlayerIndex);
         }
@@ -203,6 +210,7 @@ public class GameInstance {
 
     public void endRound(){
         this.karakalPlayer = null;
+        this.roundOver = true;
         for (UUID uuid : playerMap.keySet()){
             playerMap.get(uuid).setScore(0);
         }
@@ -221,6 +229,7 @@ public class GameInstance {
             tempScores.put(uuid, score);
         }
         this.currentPlayer = lowestPlayer;
+        this.currentPlayerIndex = this.players.indexOf(this.currentPlayer);
         if (scores.get(karakalPlayer) > lowest){
             scores.put(karakalPlayer, scores.get(karakalPlayer) + 30);
         }
@@ -286,37 +295,62 @@ public class GameInstance {
 
     public boolean isStraight(List<Long> discard){
         int jokerCount = countJokers(discard);
-        int index = 0;
-        int prevRank = cardMap.get(discard.get(index)).getRank().getValue();
-        while (prevRank == Rank.Joker.getValue()){
-            prevRank = cardMap.get(discard.get(++index)).getRank().getValue();
-        }
-        Suit prevSuit = cardMap.get(discard.get(index++)).getSuit();
-        Card card;
-        Rank currentRank;
-        Suit currentSuit;
-        for (int i = 0; i < discard.size(); i++){
-            card = cardMap.get(discard.get(i));
-            currentRank = card.getRank();
-            if (currentRank == Rank.Joker){
-                continue;
-            }
-            currentSuit = card.getSuit();
-            if (prevSuit != currentSuit){
+        List<Card> cards = discard.stream().map(cardMap::get).filter(c -> c.getRank() != Rank.Joker).toList();
+        if (cards.isEmpty()) return true;
+        cards = new ArrayList<>(cards);
+        cards.sort(Card.BY_RANK);
+        Suit suit = cards.getFirst().getSuit();
+        for (int i = 1; i < cards.size(); i++){
+            Card prev = cards.get(i-1);
+            Card curr = cards.get(i);
+            if (curr.getSuit() != suit){
                 return false;
             }
-            if (prevRank != currentRank.getValue() -1){
-                if (jokerCount > 0){
-                    jokerCount--;
-                    prevRank++;
-                }
-                else{
-                    return false;
-                }
+            int difference = curr.getRank().getValue() - prev.getRank().getValue();
+            if (difference == 1){
+                continue;
+            }else if(difference > 1 && jokerCount >= difference -1){
+                jokerCount -= (difference -1);
+            }else{
+                return false;
             }
         }
         return true;
     }
+
+//    public boolean isStraight(List<Long> discard){
+//        int jokerCount = countJokers(discard);
+//        int index = 0;
+//        int prevRank = cardMap.get(discard.get(index)).getRank().getValue();
+//        while (prevRank == Rank.Joker.getValue()){
+//            prevRank = cardMap.get(discard.get(++index)).getRank().getValue();
+//        }
+//        Suit prevSuit = cardMap.get(discard.get(index++)).getSuit();
+//        Card card;
+//        Rank currentRank;
+//        Suit currentSuit;
+//        for (int i = 0; i < discard.size(); i++){
+//            card = cardMap.get(discard.get(i));
+//            currentRank = card.getRank();
+//            if (currentRank == Rank.Joker){
+//                continue;
+//            }
+//            currentSuit = card.getSuit();
+//            if (prevSuit != currentSuit){
+//                return false;
+//            }
+//            if (prevRank != currentRank.getValue() -1){
+//                if (jokerCount > 0){
+//                    jokerCount--;
+//                    prevRank++;
+//                }
+//                else{
+//                    return false;
+//                }
+//            }
+//        }
+//        return true;
+//    }
 
     public boolean isRanked(List<Long> discard){
         Card first = cardMap.get(discard.getFirst());

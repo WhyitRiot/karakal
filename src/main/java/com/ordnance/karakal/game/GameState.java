@@ -10,10 +10,14 @@ public class GameState {
     public int deckSize;
     public int discardSize;
     public UUID currentPlayer;
+    public UUID karakalPlayer;
     public Map<UUID, String> players;
     public TreeMap<UUID, Integer> leaderboard;
     public DiscardActionSnap lastPlay;
+    public boolean finalRound;
+    public boolean roundOver;
     public boolean inProgress;
+    public boolean gameOver;
     public UUID host;
 
     public String toString(){
