@@ -17,6 +17,7 @@ import {createCallMessage} from "./messages/CallMessage.ts";
 import game from "../../pages/Game.tsx";
 import join from "../../pages/Join.tsx";
 import {createPlayMessage, type PlayMessage} from "./messages/PlayMessage.ts";
+import {createStartNextRoundMessage} from "./messages/StartNextRoundMessage.ts";
 
 export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
@@ -245,10 +246,19 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         })
     }
 
+    const nextRoundAction = () => {
+        if (!gameId || !clientRef.current) return;
+        const nextRoundMessage = createStartNextRoundMessage(gameId);
+        clientRef.current.publish({
+            destination: endPoint,
+            body: JSON.stringify(nextRoundMessage)
+        })
+    }
+
     return (
         <GameStateContext.Provider value={{
             playerName, playerId, gameId, gameState, playerState, connected, tableCards, isHost, isGameStarted, isMyTurn, currentPlayerName, score,
-            setGameId, drawAction, discardAction, callAction, playAction, setTableCards, setName, createGame, joinGame, startGame
+            setGameId, drawAction, discardAction, callAction, playAction, setTableCards, setName, createGame, joinGame, startGame, nextRoundAction
         }}>
             {children}
         </GameStateContext.Provider>

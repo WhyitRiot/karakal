@@ -1,9 +1,9 @@
-export type StartMessage = {
-    type: "START",
+export type StartNextRoundMessage = {
+    type: "NEXT",
     gameId: string
 }
 
-export const createStartMessage = (gameId : string) => ({
-    type: "START",
+export const createStartNextRoundMessage = (gameId : string) => ({
+    type: "NEXT",
     gameId
 })
