@@ -15,13 +15,15 @@ import {
 } from "../utilities/cardBools.ts";
 import AnimatedDeckPile from "../components/AnimatedDeckPile.tsx";
 import StartGameModal from "../components/StartGameModal.tsx";
+import WaitForHostModal from "../components/WaitForHostModal.tsx";
+import WaitForYourTurnModal from "../components/WaitForYourTurnModal.tsx";
 
 const MAX_VISIBLE_LAYERS = 10;
 
 const Game = () => {
     const context = useContext(GameStateContext);
     if (!context) throw Error("outside of provider!");
-    const{tableCards, setTableCards, discardAction, drawAction, callAction, playAction} = context;
+    const{tableCards, setTableCards, playAction, callAction, isHost, isGameStarted, isMyTurn, currentPlayerName, score} = context;
     const deckSize = 40;
     const[layers, setLayers] = useState(Math.min(MAX_VISIBLE_LAYERS, Math.ceil(deckSize/5)));
 
@@ -103,7 +105,7 @@ const Game = () => {
 
     const removeThisCard = (card : Card) => {
         moveCardToHand(card.id);
-        discardHand.filter(c => c.id != card.id);
+        setDiscardHand(prev => prev.filter(c => c.id != card.id));
     }
 
     const removeFromDeck = (card : Card) =>{
@@ -115,16 +117,16 @@ const Game = () => {
         addCard(card);
         moveCardToSelected(card.id);
     }
+    const karakal = () =>{
+        if (score > 10) return;
+        callAction();
+    }
     return (
             <div className={"relative w-screen h-screen overflow-hidden"}>
-                <StartGameModal isVisible={isOpen} setIsVisible={setIsOpen}/>
+                { isHost ?
+                    <StartGameModal isVisible={isOpen} setIsVisible={setIsOpen}/> : <WaitForHostModal waiting={isGameStarted}/>}
+                { (!isMyTurn && isGameStarted) && <WaitForYourTurnModal waiting={isMyTurn} player={currentPlayerName} />}
                 <LayoutGroup>
-
-                    <div className={"absolute top-4 w-full flex flex-row justify-center gap-5"}>
-                        <p className={"border rounded px-2"}>Discard</p>
-                        <p className={"border rounded px-2"}>Deck</p>
-                    </div>
-
                         <div className={"h-1/3 w-full flex items-center justify-center ml-2 mr-2 gap-10"}>
                             <div className={"w-1/4 flex flex-col items-center border rounded-3xl"}>
                                 <motion.div
@@ -193,9 +195,9 @@ const Game = () => {
                     <div className={"h-1/3 w-full flex items-center justify-center"}>
                         <div className={"flex flex-col items-center gap-3"}>
                             {discardHand.length > 0 && <div className={"flex flex-row gap-3"}>
-                                <button
-                                    className={"border rounded p-2 hover:cursor-pointer"}
-                                onClick={stageLocal}>Discard</button>
+                                {/*<button*/}
+                                {/*    className={"border rounded p-2 hover:cursor-pointer"}*/}
+                                {/*onClick={stageLocal}>Discard</button>*/}
                                 <button
                                 className={"border rounded p-2 hover:cursor-pointer"}
                             onClick={resetLocalDiscardHand}>Cancel</button>
@@ -212,10 +214,14 @@ const Game = () => {
                         </div>
                     </div>
 
-                    <div className={"h-1/3 w-full flex justify-center gap-3 min-h-[200px]"}>
+                    <div className={"h-1/6 w-full flex justify-center gap-3 min-h-[200px]"}>
                             {tableCards.filter(card => card.state === "hand").map(card => (
                                 <AnimatedCardItem key={card.id} card={card} deck={false} selectable={true} discardHand={discardHand} moveFunction={addThisCard} layoutId={card.id.toString()}/>
                             ))}
+                    </div>
+                    <div className={"w-full h-1/6 flex flex-col items-center justify-start"}>
+                        <p>{score}</p>
+                        {(score <= 10) && <button onClick={karakal}>KARAKAL</button>}
                     </div>
                 </LayoutGroup>
 
