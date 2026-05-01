@@ -2,7 +2,6 @@ import React, {useContext, useState} from 'react';
 import NewPlayerModal from "../components/NewPlayerModal.tsx";
 import {Link} from "react-router";
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
-import type {GameStateContextType} from "../utilities/websocket/types/GameStateContextType.ts";
 
 const Home = () => {
     const context = useContext(GameStateContext);

@@ -1,15 +1,11 @@
 import React, {useContext, useEffect, useState} from 'react';
-import CardItem from "../components/CardItem.tsx";
-import {type Card, type CardState} from "../utilities/card.ts"
-import {Rank} from "../utilities/rank.ts";
-import {Suit} from "../utilities/suit.ts"
+import {type Card} from "../utilities/types/card.ts"
+import {Rank} from "../utilities/types/rank.ts";
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
-import {cardBacks, getCardStyling} from "../utilities/cardImages.ts";
-import {LayoutGroup, AnimatePresence, motion} from "framer-motion";
+import {cardBacks} from "../utilities/cardImages.ts";
+import {LayoutGroup, motion} from "framer-motion";
 import {AnimatedCardItem} from "../components/AnimatedCardItem.tsx";
 import {
-    doesNewCardContinueSuitedStraight,
-    isNewCardSameRank,
     isValidSelection,
     validateEntireHand
 } from "../utilities/cardBools.ts";
