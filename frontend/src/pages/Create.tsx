@@ -21,11 +21,9 @@ const Create = () => {
         navigate("/game")
     }
     return (
-
         <>
             <div className={"flex h-screen w-screen justify-center items-center"}>
                 {gameId ?
-
                     <div className={"flex flex-col h-1/3 w-1/3 justify-center items-center gap-3"}>
                         <p className={"text-5xl"}>Game ID</p>
                         <p className={"text-2xl text-amber-500"}>{gameId}
@@ -52,7 +50,6 @@ const Create = () => {
                         <span className="sr-only">Loading…</span>
                     </div>
                 }
-
             </div>
         </>
     );

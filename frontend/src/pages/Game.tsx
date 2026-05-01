@@ -14,13 +14,14 @@ import StartGameModal from "../components/StartGameModal.tsx";
 import WaitForHostModal from "../components/WaitForHostModal.tsx";
 import WaitForYourTurnModal from "../components/WaitForYourTurnModal.tsx";
 import RoundOverModal from "../components/RoundOverModal.tsx";
+import GameOverModal from "../components/GameOverModal.tsx";
 
 const MAX_VISIBLE_LAYERS = 10;
 
 const Game = () => {
     const context = useContext(GameStateContext);
     if (!context) throw Error("outside of provider!");
-    const{tableCards, setTableCards, playAction, callAction, isHost, isGameStarted, isMyTurn, currentPlayerName, score, roundOver} = context;
+    const{tableCards, setTableCards, playAction, callAction, isHost, isGameStarted, isMyTurn, currentPlayerName, score, roundOver, gameOver} = context;
     const deckSize = 40;
     const[layers, setLayers] = useState(Math.min(MAX_VISIBLE_LAYERS, Math.ceil(deckSize/5)));
 
@@ -120,10 +121,10 @@ const Game = () => {
     }
     return (
         <>
-        { isHost ?
-                <StartGameModal isVisible={isOpen} setIsVisible={setIsOpen}/> : <WaitForHostModal waiting={isGameStarted}/>}
-    { (!isMyTurn && isGameStarted) && <WaitForYourTurnModal waiting={isMyTurn} player={currentPlayerName} />}
-    {roundOver && <RoundOverModal roundOver={roundOver}/>}
+        { isHost ? <StartGameModal isVisible={isOpen} setIsVisible={setIsOpen}/> : <WaitForHostModal waiting={isGameStarted}/>}
+        { (!isMyTurn && isGameStarted) && <WaitForYourTurnModal waiting={isMyTurn} player={currentPlayerName} />}
+        {roundOver && <RoundOverModal roundOver={roundOver}/>}
+            {gameOver && <GameOverModal gameOver={gameOver}/>}
             <div className={"relative w-screen h-screen overflow-hidden"}>
                 <LayoutGroup>
                         <div className={"h-1/3 w-full flex items-center justify-center ml-2 mr-2 gap-10"}>

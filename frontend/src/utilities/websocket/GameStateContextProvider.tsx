@@ -49,6 +49,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [leaderboard, setLeaderboard] = useState<{name: string, score: number | string}[] | undefined>();
     const [players, setPlayers] = useState<{[id: string]: string}>({});
     const [roundOver, setRoundOver] = useState<boolean>(false);
+    const [gameOver, setGameOver] = useState<boolean>(false);
     const clientRef = useRef<Client | null>(null);
     const [connected, setConnected] = useState(false);
 
@@ -128,6 +129,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
                 })).sort((a,b) => a.score - b.score);
                 setLeaderboard(localLeader);
             }
+            setGameOver(gameState.gameOver);
         }
     }, [gameState, playerState])
 
@@ -277,7 +279,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
             playerName, playerId, gameId, gameState, playerState,
             connected, tableCards, isHost, isGameStarted, isMyTurn,
             currentPlayerName, score, karakalPlayer, leaderboard,
-            roundOver, players,
+            roundOver, players, gameOver,
             setGameId, drawAction, discardAction, callAction, playAction, setTableCards, setName, createGame, joinGame, startGame, nextRoundAction
         }}>
             {children}

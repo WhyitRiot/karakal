@@ -19,6 +19,7 @@ export type GameStateContextType = {
     leaderboard : {name: string, score: number | string}[]| undefined
     players : {[id: string]: string}
     roundOver : boolean,
+    gameOver : boolean,
     score: number,
     connected : boolean
 
