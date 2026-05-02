@@ -12,7 +12,7 @@ const WiatForYourTurnModal = ({waiting, player} : {waiting: boolean, player : st
     }, [waiting])
 
     return (
-        <div className={`fixed inset-0 ${isVisible ? `z-50` : `-z-1`} flex h-screen justify-center items-center}`}>
+        <div className={`fixed inset-0 ${isVisible ? `z-50` : `-z-1`} flex h-screen font-[Gloria] justify-center items-center}`}>
             <div className={"absolute flex flex-col w-1/2 h-2/3"}>
                 <div
                       className={`flex flex-col items-center w-full h-full justify-around ${isVisible ? (isExiting ? 'animate-fade-out' : 'animate-fade-in') : 'translate-y-full opacity-0'}`}

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {type GameState} from './types/GameState.ts'
 import {type PlayerState} from './types/PlayerState.ts'
 import {Client, type IFrame, type IMessage, type StompSubscription} from '@stomp/stompjs'
@@ -18,6 +18,7 @@ import game from "../../pages/Game.tsx";
 import join from "../../pages/Join.tsx";
 import {createPlayMessage, type PlayMessage} from "./messages/PlayMessage.ts";
 import {createStartNextRoundMessage} from "./messages/StartNextRoundMessage.ts";
+import {createStayMessage} from "./messages/StayMessage.ts";
 
 export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
@@ -44,7 +45,6 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
     const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
     const [currentPlayerName, setCurrentPlayerName] = useState<string | undefined>();
-    const [score, setScore] = useState<number>(0);
     const [karakalPlayer, setKarakalPlayer] = useState<string | undefined>();
     const [leaderboard, setLeaderboard] = useState<{name: string, score: number | string}[] | undefined>();
     const [players, setPlayers] = useState<{[id: string]: string}>({});
@@ -52,10 +52,17 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [gameOver, setGameOver] = useState<boolean>(false);
     const clientRef = useRef<Client | null>(null);
     const [connected, setConnected] = useState(false);
+    const [deckSize, setDeckSize] = useState(0);
+    const [isFinalRound, setIsFinalRound] = useState(false);
 
     //Client-side state
 
     const [tableCards, setTableCards] = useState<Card[]>([]);
+
+    const score = useMemo(()=>{
+        return tableCards.filter(card => card.state === "hand" || card.state === "deck" || card.state === "selected")
+            .reduce((sum, card) => sum + (card.rank), 0);
+    }, [tableCards])
 
     const mapTableCards = () : void => {
         if (!playerState || !gameState) return;
@@ -70,7 +77,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
                     ...existing,
                     ...card,
                     rank: rankMap[card.rank],
-                    state: existing?.state === "drawing" ? existing.state : "hand"
+                    state: (existing?.state === "drawing" || existing?.state === "deck" || existing?.state === "discarding") ? existing.state : "hand"
                 })
                 nextIds.add(card.id);
             }
@@ -90,6 +97,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
                     map.delete(id);
                 }
             }
+            console.log("rendering");
             return Array.from(map.values());
         })
     }
@@ -105,6 +113,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
             }
         ])
     }
+
     // Game State update loop
     useEffect(() => {
         if (gameState && playerState){
@@ -116,7 +125,6 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
             if (gameState.currentPlayer){
                 setCurrentPlayerName(gameState.players[gameState.currentPlayer])
             }
-            setScore(playerState.score);
             setKarakalPlayer(gameState.karakalPlayer);
             console.log("Final round:", gameState.finalRound);
             console.log("Round over: ", gameState.roundOver);
@@ -130,6 +138,8 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
                 setLeaderboard(localLeader);
             }
             setGameOver(gameState.gameOver);
+            setDeckSize(gameState.deckSize);
+            setIsFinalRound(gameState.finalRound);
         }
     }, [gameState, playerState])
 
@@ -274,13 +284,22 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         })
     }
 
+    const stayAction = () =>{
+        if (!gameId || !clientRef.current) return;
+        const stayMessage = createStayMessage(gameId);
+        clientRef.current.publish({
+            destination: endPoint,
+            body: JSON.stringify(stayMessage)
+        })
+    }
+
     return (
         <GameStateContext.Provider value={{
             playerName, playerId, gameId, gameState, playerState,
             connected, tableCards, isHost, isGameStarted, isMyTurn,
             currentPlayerName, score, karakalPlayer, leaderboard,
-            roundOver, players, gameOver,
-            setGameId, drawAction, discardAction, callAction, playAction, setTableCards, setName, createGame, joinGame, startGame, nextRoundAction
+            roundOver, players, gameOver, deckSize, isFinalRound,
+            setGameId, drawAction, discardAction, callAction, playAction, setTableCards, setName, createGame, joinGame, startGame, nextRoundAction, stayAction
         }}>
             {children}
         </GameStateContext.Provider>

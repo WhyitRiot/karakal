@@ -21,8 +21,21 @@ export function AnimatedCardItem ({card, deck, selectable, discardHand, moveFunc
     const [canSelect, setCanSelect] = useState((isNewCardSameRank(discardHand, card) || doesNewCardContinueSuitedStraight(discardHand, card)));
     const [isFlipped, setIsFlipped] = useState(deck);
 
+    const handleFlip = () => {
+        setIsFlipped(false);
+        setTimeout(()=>{
+            if (!moveFunction) return;
+            moveFunction(card);
+        }, 1000)
+    }
+
     useEffect(()=>{
         if (deck && moveFunction){
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            handleFlip();
+            return;
+        }
+        if (card.state === "drawing" && moveFunction){
             moveFunction(card);
             return;
         }
@@ -32,8 +45,8 @@ export function AnimatedCardItem ({card, deck, selectable, discardHand, moveFunc
         if (isMyTurn){
             switch (mode){
                 case "unknown" : modeBool = (isNewCardSameRank(discardHand, card) || doesNewCardContinueSuitedStraight(discardHand, card)); break;
-                case "sameRank" : modeBool = (isNewCardSameRank(discardHand, card)); break;
-                case "straight" : modeBool = (doesNewCardContinueSuitedStraight(discardHand, card));
+                case "straight" : modeBool = (doesNewCardContinueSuitedStraight(discardHand, card)); break;
+                case "sameRank" : modeBool = (isNewCardSameRank(discardHand, card));
             }
         }else{
             modeBool = false;
@@ -45,18 +58,10 @@ export function AnimatedCardItem ({card, deck, selectable, discardHand, moveFunc
     const handleClickable = async () => {
         if (!moveFunction) return;
         if (deck){
-            await handleFlip()
+            handleFlip()
             return;
         }
         moveFunction(card);
-    }
-
-    const handleFlip = async () => {
-        setIsFlipped(false);
-        setTimeout(()=>{
-            if (!moveFunction) return;
-            moveFunction(card);
-        }, 1000)
     }
 
     return (
@@ -67,7 +72,7 @@ export function AnimatedCardItem ({card, deck, selectable, discardHand, moveFunc
                 initial={{ rotateY: deck ? 180 : 0 }}
                 animate={{
                     opacity: canSelect || deck ? 1 : 0.5,
-                    y: 0,
+                    y: (!isFlipped && deck) ? 40 : 0,
                     x: 0,
                     rotateY: (isFlipped ? 180 : 0)
                 }}
@@ -81,7 +86,7 @@ export function AnimatedCardItem ({card, deck, selectable, discardHand, moveFunc
                 style={{transformStyle: "preserve-3d", position: "relative", height:"100%", width: "100%", }}
                 onClick={handleClickable}
                 {...motionProps}
-                whileHover={{scale: canSelect ? 1.10 : 1, y: -10}}
+                whileHover={{scale: canSelect ? 1.10 : 1, y: Number(!deck) * -10 }}
                 whileTap={{scale: 0.95}}
                 className={"relative w-full h-full hover:cursor-pointer"}
             >

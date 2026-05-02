@@ -1,6 +1,9 @@
 import React, {useContext} from 'react';
 import * as yup from 'yup';
 import {type FieldValues, useForm} from 'react-hook-form'
+import GifButton from "../components/GifButton.tsx"
+import JoinImg from "../assets/Join.gif"
+import JoinImgHover from "../assets/JoinBlue.gif"
 import {yupResolver} from "@hookform/resolvers/yup";
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
 import {useNavigate} from "react-router";
@@ -33,12 +36,12 @@ const Join = () => {
     }
 
     return (
-        <div className={"flex flex-col h-screen w-screen items-center justify-center gap-2 text-5xl"}>
-            <form className={"flex flex-col h-1/3 w-1/3 justify-center items-center gap-3"} onSubmit={handleSubmit(e => onSubmit(e))}>
+        <div className={"flex flex-col h-screen w-screen items-center justify-center gap-2 text-5xl font-[Gloria]"}>
+            <form className={"flex flex-col h-1/3 w-full justify-center items-center gap-3"} onSubmit={handleSubmit(e => onSubmit(e))}>
                 <label className={"h-1/4"} htmlFor={"gameIdInput"}>Enter the Game ID</label>
                 <p className={"text-2xl text-red-500 h-1/4"}>{errors.gameId && errors.gameId.message}</p>
-                <input className={"border rounded text-center h-1/4 w-full text-2xl"} {...register("gameId")} type="text" id={"gameIdInput"}/>
-                <button className={"h-1/4 w-2/3 border rounded hover:cursor-pointer hover:bg-blue-400/50"} type={"submit"}>Join</button>
+                <input className={"border rounded text-center h-1/4 w-1/3 text-2xl"} {...register("gameId")} type="text" id={"gameIdInput"}/>
+                <GifButton nonHover={JoinImg} hover={JoinImgHover} type={"submit"} />
             </form>
         </div>
     );

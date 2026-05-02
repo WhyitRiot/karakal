@@ -1,5 +1,8 @@
 import React, {useState} from 'react';
 import * as yup from 'yup';
+import GifButton from "../components/GifButton.tsx"
+import Go from "../assets/Go.gif"
+import GoHover from "../assets/GoGreen.gif"
 import {type FieldValues, useForm} from "react-hook-form";
 import type {InferType} from "yup";
 import {yupResolver} from '@hookform/resolvers/yup';
@@ -30,10 +33,10 @@ const NewPlayerModal = ({setPlayerName, isVisible, setIsVisible} : {setPlayerNam
     }
 
     return (
-        <div className={`fixed inset-0 ${isVisible ? `z-50` : `-z-1`} flex h-screen justify-center items-center ${isVisible && 'backdrop-blur-md'}`}>
+        <div className={`fixed inset-0 ${isVisible ? `z-50` : `-z-1`} flex h-screen justify-center items-center font-[Gloria] ${isVisible && 'backdrop-blur-md'}`}>
             <div className={"absolute flex flex-col w-1/2 h-2/3"}>
                 <form onSubmit={handleSubmit(e => submit(e))}
-                      className={`flex flex-col items-center w-full h-full justify-around bg-gray-400 border rounded-4xl ${isVisible ? (isExiting ? 'animate-fade-out' : 'animate-fade-in') : 'translate-y-full opacity-0'}`}
+                      className={`flex flex-col items-center w-full h-full justify-around border bg-white border-black/50 shadow-lg rounded-4xl ${isVisible ? (isExiting ? 'animate-fade-out' : 'animate-fade-in') : 'translate-y-full opacity-0'}`}
                       onAnimationEnd={() => {
                           if (isExiting) setIsVisible(false);
                       }}
@@ -46,7 +49,7 @@ const NewPlayerModal = ({setPlayerName, isVisible, setIsVisible} : {setPlayerNam
                                id={"nameInput"}
                                type={"text"}/>
                     </div>
-                    <button className={"text-5xl border rounded-2xl w-1/3 p-4 hover:bg-green-400 hover:cursor-pointer"} type={"submit"}>Go!</button>
+                    <GifButton hover={GoHover} nonHover={Go} type={"submit"}/>
                 </form>
             </div>
         </div>

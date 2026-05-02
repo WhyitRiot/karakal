@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+    font-family: 'Gloria';
+    src: url('/GloriaHallelujah-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 @theme {
     --animate-fade-in: fade-in 0.5s;
     @keyframes fade-in {

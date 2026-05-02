@@ -21,7 +21,9 @@ export type GameStateContextType = {
     roundOver : boolean,
     gameOver : boolean,
     score: number,
-    connected : boolean
+    connected : boolean,
+    deckSize : number,
+    isFinalRound : boolean,
 
     tableCards: Card[]
     setTableCards: Dispatch<SetStateAction<Card[]>>
@@ -36,6 +38,7 @@ export type GameStateContextType = {
     playAction : (cardIds : number[], drawType: string, cardId? : number) => void;
     callAction : () => void;
     nextRoundAction : () => void;
+    stayAction : () => void;
 
     //selectCardFromDiscard,discardCard,selectCard, stageCard
     // const [karakalPlayer, setKarakalPlayer] = useState<string | undefined>();

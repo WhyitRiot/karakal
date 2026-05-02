@@ -1,4 +1,7 @@
 import React, {useContext, useEffect} from 'react';
+import Join from "../assets/Join.gif";
+import JoinHover from "../assets/JoinBlue.gif"
+import GifButton from "../components/GifButton.tsx"
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
 import {useNavigate} from "react-router";
 
@@ -24,16 +27,14 @@ const Create = () => {
         <>
             <div className={"flex h-screen w-screen justify-center items-center"}>
                 {gameId ?
-                    <div className={"flex flex-col h-1/3 w-1/3 justify-center items-center gap-3"}>
-                        <p className={"text-5xl"}>Game ID</p>
-                        <p className={"text-2xl text-amber-500"}>{gameId}
-                        </p>
-                        <p className={"text-2xl"}>Share with your friends!</p>
-                        <button
-
-                            onClick={handleJoin}
-                            className={"disabled:bg-gray-400 text-5xl w-2/3 border rounded hover:bg-blue-400/50 hover:cursor-pointer"}>Join
-                        </button>
+                    <div className={"flex flex-col h-1/3 w-full justify-center items-center gap-3"}>
+                        <div className={"flex flex-col w-2/3 items-center mb-5 gap-3"}>
+                            <p className={"text-5xl font-[Gloria]"}>Game ID</p>
+                            <p className={"text-2xl text-amber-500"}>{gameId}
+                            </p>
+                            <p className={"text-2xl font-[Gloria]"}>Share with your friends!</p>
+                        </div>
+                        <GifButton nonHover={Join} hover={JoinHover} type={"button"} click={handleJoin} />
                     </div>
 
                     :

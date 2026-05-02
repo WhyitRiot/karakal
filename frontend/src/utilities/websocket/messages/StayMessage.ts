@@ -1,11 +1,9 @@
-export type CallMessage = {
-    type: "CALL",
+export type StayMessage = {
+    type: "STAY",
     gameId: string,
-    playerId: string
 }
 
-export const createCallMessage = (gameId: string, playerId: string): CallMessage => ({
-    type: "CALL",
-    gameId,
-    playerId
+export const createStayMessage = (gameId: string): StayMessage => ({
+    type: "STAY",
+    gameId
 });

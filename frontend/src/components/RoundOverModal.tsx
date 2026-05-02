@@ -16,10 +16,10 @@ const RoundOverModal = ({roundOver} : {roundOver: boolean}) => {
     }, [roundOver])
 
     return (
-        <div className={`fixed inset-0 ${isVisible ? `z-50` : `-z-1`} flex h-screen justify-center items-center ${isVisible && 'backdrop-blur-md'}`}>
+        <div className={`fixed inset-0 ${isVisible ? `z-50` : `-z-1`} flex h-screen justify-center font-[Gloria] items-center ${isVisible && 'backdrop-blur-md'}`}>
             <div className={"absolute flex flex-col items-center justify-center w-1/2 h-2/3"}>
                 <div
-                      className={`flex flex-col items-center w-full h-full justify-evenly bg-gray-400 rounded-4xl ${isVisible ? (isExiting ? 'animate-fade-out' : 'animate-fade-in') : 'translate-y-full opacity-0'}`}
+                      className={`flex flex-col items-center align-middle w-full h-full justify-evenly bg-white shadow-lg rounded-4xl ${isVisible ? (isExiting ? 'animate-fade-out' : 'animate-fade-in') : 'translate-y-full opacity-0'}`}
                       onAnimationEnd={() => {
                           if (isExiting) setIsVisible(false);
                       }}
@@ -29,7 +29,7 @@ const RoundOverModal = ({roundOver} : {roundOver: boolean}) => {
                         <p className={"text-4xl self-center"}>Scores</p>
                         <table className={"text-3xl w-full"}>
                             {leaderboard && leaderboard.map((item, index) => (
-                                <tr key={index} className={"border-b"}>
+                                <tr key={index} className={"border-b first:text-amber-300"}>
                                     <td>{item.name}</td>
                                     <td>{item.score}</td>
                                 </tr>

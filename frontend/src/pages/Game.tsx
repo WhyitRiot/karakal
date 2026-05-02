@@ -1,10 +1,15 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {type Card} from "../utilities/types/card.ts"
 import {Rank} from "../utilities/types/rank.ts";
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
 import {cardBacks} from "../utilities/cardImages.ts";
 import {LayoutGroup, motion} from "framer-motion";
 import {AnimatedCardItem} from "../components/AnimatedCardItem.tsx";
+import karakalGif from "../assets/Karakal2-trans.gif"
+import karakalHover from "../assets/Karakal2Amber-trans.gif"
+import stayGif from "../assets/StayGif.gif"
+import stayGifHover from "../assets/StayGifOrange.gif"
+import GifButton from "../components/GifButton.tsx"
 import {
     isValidSelection,
     validateEntireHand
@@ -21,14 +26,16 @@ const MAX_VISIBLE_LAYERS = 10;
 const Game = () => {
     const context = useContext(GameStateContext);
     if (!context) throw Error("outside of provider!");
-    const{tableCards, setTableCards, playAction, callAction, isHost, isGameStarted, isMyTurn, currentPlayerName, score, roundOver, gameOver} = context;
-    const deckSize = 40;
+    const{tableCards, setTableCards, playAction, callAction, stayAction, playerId, isHost, isGameStarted, isMyTurn, currentPlayerName, score, roundOver, gameOver, deckSize, isFinalRound, karakalPlayer} = context;
     const[layers, setLayers] = useState(Math.min(MAX_VISIBLE_LAYERS, Math.ceil(deckSize/5)));
 
     const[isOpen, setIsOpen] = useState<boolean>(true);
 
     const [discardHand, setDiscardHand] = useState<Card[]>([]);
-    const [pickedUpCard, setPickedUpCard] = useState<boolean>(false);
+    // const [selectedACard, setSelectedACard] = useState<boolean>(false);
+    const selectedACard = useMemo(()=>{
+        return discardHand.length > 0;
+    }, [discardHand])
 
 
     const moveCardToSelected = (cardId: number) => {
@@ -39,17 +46,20 @@ const Game = () => {
         setTableCards(prev => prev.map(card => card.id === cardId ? {...card, state: "hand"} : card));
     }
 
-    const moveCardToStage = (cardId : number) => {
-        setTableCards(prev => prev.map(card => card.id === cardId ? {...card, state: "staged"} : card));
+    const queueCardToMoveToHand = (cardId : number) => {
+        setTableCards(prev => prev.map(card => card.id === cardId ? {...card, state: "drawing"} : card));
     }
 
-    const moveCardToDiscard = (cardId : number) => {
-        setTableCards(prev => prev.map(card => card.id === cardId ? {...card, state: "discard"} : card));
-    }
+    const queueCardsToMoveToDiscard = (cardIds : number[]) => {
+        const discardSet = new Set(cardIds);
 
-    const pickUpCard = () => {
-        setPickedUpCard(true);
-    }
+        setTableCards(prev => prev.map(card =>
+            discardSet.has(card.id)
+                ? { ...card, state: "discard" }
+                : card
+        ));
+    };
+
     const resetDiscardHand = () => {
         setDiscardHand([]);
     }
@@ -62,37 +72,26 @@ const Game = () => {
     }
 
     const discard = () => {
+        queueCardsToMoveToDiscard(discardHand.map(card => card.id));
         resetDiscardHand()
     }
 
     useEffect(()=>{
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setLayers(Math.min(MAX_VISIBLE_LAYERS, Math.ceil(deckSize / 5)));
+        console.log(selectedACard);
     }, [deckSize, tableCards])
 
-    const stageLocal = () => {
-        if (!validateEntireHand(discardHand)) return;
-        console.log(discardHand);
-        discardHand.forEach(card => moveCardToStage(card.id));
-    }
-
-    const moveSelectedCardsToDiscard = () => {
-        if (!discardHand) return;
-        discardHand.forEach(card => moveCardToDiscard(card.id));
-    }
-
     const drawFromDiscard = async (card : Card) => {
-        if (pickedUpCard) return;
-        pickUpCard();
+        if (!selectedACard) return;
+        queueCardToMoveToHand(card.id);
         playAction(discardHand.map(card => card.id), "DISCARD", card.id);
-        setPickedUpCard(false);
         discard();
     }
 
     const drawFromDeck = async () =>{
-        pickUpCard();
+        if (!selectedACard) return;
         playAction(discardHand.map(card => card.id), "DECK")
-        setPickedUpCard(false);
         discard();
     }
 
@@ -119,15 +118,18 @@ const Game = () => {
         if (score > 10) return;
         callAction();
     }
+    const stay = () => {
+        stayAction();
+    }
     return (
         <>
         { isHost ? <StartGameModal isVisible={isOpen} setIsVisible={setIsOpen}/> : <WaitForHostModal waiting={isGameStarted}/>}
         { (!isMyTurn && isGameStarted) && <WaitForYourTurnModal waiting={isMyTurn} player={currentPlayerName} />}
         {roundOver && <RoundOverModal roundOver={roundOver}/>}
             {gameOver && <GameOverModal gameOver={gameOver}/>}
-            <div className={"relative w-screen h-screen overflow-hidden"}>
+            <div className={`relative w-screen h-screen overflow-hidden font-[Gloria] ${isFinalRound && "shadow-[inset_0_0_80px_rgba(255,0,0,0.55)]"}`}>
                 <LayoutGroup>
-                        <div className={"h-1/3 w-full flex items-center justify-center ml-2 mr-2 gap-10"}>
+                    <div className={"h-[35%] w-full flex items-center justify-center ml-2 mr-2 gap-10"}>
                             <div className={"w-1/4 flex flex-col items-center border rounded-3xl"}>
                                 <motion.div
                                     className="relative w-32 h-48"
@@ -192,33 +194,43 @@ const Game = () => {
                         </div>
 
                     {/*Hand*/}
-                    <div className={"h-1/3 w-full flex items-center justify-center"}>
-                        <div className={"flex flex-col items-center gap-3"}>
-                            {discardHand.length > 0 && <div className={"flex flex-row gap-3"}>
-                                <button
-                                className={"border rounded p-2 hover:cursor-pointer"}
-                            onClick={resetLocalDiscardHand}>Cancel</button>
-                            </div>
-                            }
-                            <div className={"flex flex-row"}>
+                    <div className={"h-[45%]"}>
+                        <div className={"h-1/2 w-full flex items-center justify-center"}>
+                            {(!selectedACard && isMyTurn) ?
+                                isFinalRound ?
+                                <GifButton hover={stayGifHover} nonHover={stayGif} click={stay} type={"button"}/>
+                                    :
+                                    (score <= 10 && (isFinalRound ? karakalPlayer === playerId && isMyTurn : isMyTurn)) &&
+                                    <GifButton hover={karakalHover} nonHover={karakalGif} click={karakal} type={"button"}/>
+                                :
+                                <div className={"flex flex-col items-center gap-3"}>
+                                {discardHand.length > 0 && <div className={"flex flex-row gap-3"}>
+                                    <button
+                                        className={"border rounded p-2 hover:cursor-pointer"}
+                                        onClick={resetLocalDiscardHand}>Cancel</button>
+                                </div>
+                                }
+                                <div className={"flex flex-row gap-3"}>
                                     {tableCards.filter(card => card.state === "staged").map(card =>
                                         <AnimatedCardItem key={card.id} card={card} deck={false} selectable={false} discardHand={discardHand} layoutId={card.id.toString()}/>
                                     )}
                                     {tableCards.filter(card => card.state === "selected").map(card =>
                                         <AnimatedCardItem key={card.id} card={card} deck={false} selectable={false} discardHand={discardHand} moveFunction={removeThisCard} layoutId={card.id.toString()}/>
                                     )}
+                                </div>
+                            </div>}
+                        </div>
+                        <div className={"h-1/2 flex flex-col justify-end items-end gap-3"}>
+                            <div className={"w-full flex justify-center gap-3 min-h-[200px]"}>
+                                {tableCards.filter(card => card.state === "hand").map(card => (
+                                    <AnimatedCardItem key={card.id} card={card} deck={false} selectable={true} discardHand={discardHand} moveFunction={addThisCard} layoutId={card.id.toString()}/>
+                                ))}
                             </div>
                         </div>
                     </div>
-
-                    <div className={"h-1/6 w-full flex justify-center gap-3 min-h-[200px]"}>
-                            {tableCards.filter(card => card.state === "hand").map(card => (
-                                <AnimatedCardItem key={card.id} card={card} deck={false} selectable={true} discardHand={discardHand} moveFunction={addThisCard} layoutId={card.id.toString()}/>
-                            ))}
-                    </div>
-                    <div className={"w-full h-1/6 flex flex-col items-center justify-start"}>
-                        <p>{score}</p>
-                        {(score <= 10) && <button onClick={karakal}>KARAKAL</button>}
+                    <div className={"h-[20%] w-full flex flex-col items-center justify-start"}>
+                        <p className={"text-3xl"}>Hand Value</p>
+                        <p className={`text-4xl ${score <= 10 && "text-red-600"}`}>{score}</p>
                     </div>
                 </LayoutGroup>
 

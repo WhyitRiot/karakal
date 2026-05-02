@@ -13,10 +13,10 @@ const StartGameModal = ({waiting} : {waiting: boolean}) => {
     }, [waiting])
 
     return (
-        <div className={`fixed inset-0 ${isVisible ? `z-50` : `-z-1`} flex h-screen justify-center items-center ${isVisible && 'backdrop-blur-md'}`}>
+        <div className={`fixed inset-0 ${isVisible ? `z-50` : `-z-1`} flex h-screen justify-center items-center font-[Gloria] ${isVisible && 'backdrop-blur-md'}`}>
             <div className={"absolute flex flex-col w-1/2 h-2/3"}>
                 <div
-                      className={`flex flex-col items-center w-full h-full justify-around bg-gray-400 border rounded-4xl ${isVisible ? (isExiting ? 'animate-fade-out' : 'animate-fade-in') : 'translate-y-full opacity-0'}`}
+                      className={`flex flex-col items-center w-full h-full justify-around border bg-white rounded-4xl shadow-lg ${isVisible ? (isExiting ? 'animate-fade-out' : 'animate-fade-in') : 'translate-y-full opacity-0'}`}
                       onAnimationEnd={() => {
                           if (isExiting) setIsVisible(false);
                       }}

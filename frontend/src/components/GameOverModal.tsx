@@ -36,12 +36,14 @@ const GameOverModal = ({gameOver} : {gameOver: boolean}) => {
                     <div className={"flex flex-col gap-5 w-2/3"}>
                         <p className={"text-4xl self-center"}>Scores</p>
                         <table className={"text-3xl w-full"}>
+                            <tbody>
                             {leaderboard && leaderboard.map((item, index) => (
                                 <tr key={index} className={"border-b"}>
                                     <td>{item.name}</td>
                                     <td>{item.score}</td>
                                 </tr>
                             ))}
+                            </tbody>
                         </table>
                     </div>
                     <button onClick={handleExit} className={"text-3xl border rounded p-2 hover:bg-green-400 hover:cursor-pointer"}>Return to Main Menu</button>
