@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
+import WaitForHost from "../assets/WaitingForHost.gif";
 
 const RoundOverModal = ({roundOver} : {roundOver: boolean}) => {
     const context = useContext(GameStateContext);
@@ -39,7 +40,7 @@ const RoundOverModal = ({roundOver} : {roundOver: boolean}) => {
                     <button onClick={nextRoundAction} className={"text-3xl border rounded p-2 hover:bg-green-400 hover:cursor-pointer"}>Start next round!</button>
                     :
                     <div className={"flex flex-row justify-center w-2/3"}>
-                        <p className={"text-3xl text-center"}>Waiting for host to start the next round...</p>
+                        <img className={"pl-2 pr-2"} src={WaitForHost} alt="Waiting for host..."/>
                     </div>
                 }
                 </div>

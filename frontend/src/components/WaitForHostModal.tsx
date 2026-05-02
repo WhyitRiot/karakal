@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import WaitForHost from "../assets/WaitingForHost.gif"
 
 const StartGameModal = ({waiting} : {waiting: boolean}) => {
 
@@ -21,7 +22,7 @@ const StartGameModal = ({waiting} : {waiting: boolean}) => {
                           if (isExiting) setIsVisible(false);
                       }}
                 >
-                    <p className={"text-5xl"}>Waiting for Host</p>
+                    <img className={"pl-2 pr-2"} src={WaitForHost} alt="Waiting for host..."/>
                 </div>
             </div>
         </div>

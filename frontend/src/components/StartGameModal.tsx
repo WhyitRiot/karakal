@@ -1,4 +1,7 @@
 import React, {useContext, useState} from 'react';
+import Go from "../assets/Go.gif"
+import GoHover from "../assets/GoGreen.gif"
+import GifButton from "../components/GifButton.tsx"
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
 
 const StartGameModal = ({isVisible, setIsVisible} : {isVisible: boolean, setIsVisible : (bool : boolean) => void}) => {
@@ -24,7 +27,7 @@ const StartGameModal = ({isVisible, setIsVisible} : {isVisible: boolean, setIsVi
                       }}
                 >
                     <label className={"text-5xl"} htmlFor={"nameInput"}>Start Game?</label>
-                    <button onClick={handleClose} className={"text-5xl border rounded-2xl w-1/3 p-4 hover:bg-green-400 hover:cursor-pointer"} type={"submit"}>Go!</button>
+                    <GifButton nonHover={Go} hover={GoHover} type={"button"} click={handleClose} />
                 </div>
             </div>
         </div>
