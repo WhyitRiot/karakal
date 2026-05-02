@@ -23,7 +23,8 @@ public class MessageDispatcher {
             CallHandler callHandler,
             StartHandler startHandler,
             PlayHandler playHandler,
-            StartNextRoundHandler nextRoundHandler
+            StartNextRoundHandler nextRoundHandler,
+            StayHandler stayHandler
     ){
         handlers.put(CreateMessage.class, createhandler);
         handlers.put(JoinMessage.class, joinHandler);
@@ -33,6 +34,8 @@ public class MessageDispatcher {
         handlers.put(StartMessage.class, startHandler);
         handlers.put(PlayMessage.class, playHandler);
         handlers.put(StartNextRoundMessage.class, nextRoundHandler);
+        handlers.put(StayMessage.class, stayHandler);
+
     }
     @SuppressWarnings("unchecked")
     public void dispatch(ClientMessage message, Principal principal){

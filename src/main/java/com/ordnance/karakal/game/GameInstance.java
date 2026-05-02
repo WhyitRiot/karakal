@@ -174,6 +174,12 @@ public class GameInstance {
         nextTurn();
     }
 
+    public void stay(){
+        if (finalRound && currentPlayer != karakalPlayer){
+            nextTurn();
+        }
+    }
+
     public void startNextRound(){
         if (!gameOver){
             newRound();

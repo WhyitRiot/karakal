@@ -17,10 +17,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
                 @JsonSubTypes.Type(value = DrawMessage.class, name = "DRAW"),
                 @JsonSubTypes.Type(value = CallMessage.class, name = "CALL"),
                 @JsonSubTypes.Type(value = StartMessage.class, name = "START"),
-                @JsonSubTypes.Type(value = PlayMessage.class, name="PLAY"),
-                @JsonSubTypes.Type(value = StartNextRoundMessage.class, name="NEXT")
+                @JsonSubTypes.Type(value = PlayMessage.class, name= "PLAY"),
+                @JsonSubTypes.Type(value = StartNextRoundMessage.class, name= "NEXT"),
+                @JsonSubTypes.Type(value = StayMessage.class, name = "STAY")
         }
 )
-
 public interface ClientMessage {
 }

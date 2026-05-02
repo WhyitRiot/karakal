@@ -68,4 +68,8 @@ public class GameService {
     public void callKarakal(UUID gameId){
         this.games.get(gameId).callKarakal();
     }
+
+    public void stay(UUID gameId){
+        this.games.get(gameId).stay();
+    }
 }
