@@ -13,7 +13,7 @@ export default function KarakalButton({ nonHover, hover, type, click } : GifButt
 
     return (
         <motion.button
-            className="h-20 w-1/3 text-red-600 overflow-hidden rounded-2xl hover:cursor-pointer relative shadow-sm hover:shadow-md"
+            className="h-20 w-2/3 text-red-600 overflow-hidden rounded-2xl hover:cursor-pointer relative shadow-sm hover:shadow-md"
             type={type}
             onClick={click && click}
             onMouseEnter={() => setHovered(true)}

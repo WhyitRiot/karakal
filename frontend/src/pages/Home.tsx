@@ -5,6 +5,7 @@ import JoinHover from "../assets/JoinBlue.gif"
 import GifButton from "../components/GifButton.tsx"
 import Host from "../assets/Host.gif"
 import HostHover from "../assets/HostOrange.gif"
+import Karakal from "../assets/Karakal2.gif"
 import {Link, useNavigate} from "react-router";
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
 
@@ -42,6 +43,7 @@ const Home = () => {
             </div> :
 
                 <div className={"flex flex-col h-screen w-screen items-center justify-center gap-2 font-[Gloria]"}>
+                    <img className={"h-80 w-4/5 object-contain"} src={Karakal} alt="Karakal"/>
                     <p className={"text-5xl mb-5"}>Hello {playerName}</p>
                     <div className={"flex flex-col w-full gap-3 items-center"}>
                             <GifButton nonHover={Join} hover={JoinHover} click={navigateToJoin} type={"button"}/>

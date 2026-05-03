@@ -1,5 +1,8 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
+import GifButton from "../components/GifButton.tsx"
+import StartNextRound from "../assets/StartNextRound.gif"
+import StartNextRoundHover from "../assets/StartNextRoundGreen.gif"
 import WaitForHost from "../assets/WaitingForHost.gif";
 
 const RoundOverModal = ({roundOver} : {roundOver: boolean}) => {
@@ -36,13 +39,16 @@ const RoundOverModal = ({roundOver} : {roundOver: boolean}) => {
                                 </tr>
                             ))}
                         </table>
-                    </div>{ isHost ?
-                    <button onClick={nextRoundAction} className={"text-3xl border rounded p-2 hover:bg-green-400 hover:cursor-pointer"}>Start next round!</button>
-                    :
-                    <div className={"flex flex-row justify-center w-2/3"}>
-                        <img className={"pl-2 pr-2"} src={WaitForHost} alt="Waiting for host..."/>
                     </div>
-                }
+                    <div className={"flex flex-row justify-center w-full"}>
+                        { isHost ?
+                            <GifButton nonHover={StartNextRound} hover={StartNextRoundHover} type={"button"} click={nextRoundAction} />
+                            :
+                            <div className={"flex flex-row justify-center w-2/3"}>
+                                <img className={"pl-2 pr-2"} src={WaitForHost} alt="Waiting for host..."/>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
