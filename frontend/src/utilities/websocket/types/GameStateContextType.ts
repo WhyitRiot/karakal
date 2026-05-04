@@ -6,11 +6,11 @@ import {type Dispatch, type SetStateAction, useState} from "react";
 
 export type GameStateContextType = {
     playerName : string | undefined
-    playerId: string | undefined
-    gameId : string | undefined,
+    playerId: string | null
+    gameId : string | null,
     setGameId : (gameId : string) => void;
-    gameState : GameState | undefined,
-    playerState : PlayerState | undefined,
+    gameState : GameState | null,
+    playerState : PlayerState | null,
     isHost : boolean,
     isGameStarted : boolean,
     isMyTurn : boolean,

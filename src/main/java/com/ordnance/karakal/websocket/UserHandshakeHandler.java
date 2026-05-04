@@ -13,6 +13,7 @@ import java.util.UUID;
 public class UserHandshakeHandler extends DefaultHandshakeHandler {
     @Override
     protected @Nullable Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
+//        request.getHeaders().get("player-id");
         String playerId = UUID.randomUUID().toString();
         return () -> playerId;
     }

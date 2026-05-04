@@ -22,25 +22,18 @@ import {createStayMessage} from "./messages/StayMessage.ts";
 
 export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
-    //DEV
-    const hand : Card[] = [
-        {id: 1, rank: Rank.Joker, suit: undefined, state: "hand" },
-        {id: 4,  rank: Rank.Ten, suit: Suit.Spades, state: "hand" },
-        {id: 7, rank: Rank.Eight, suit: Suit.Spades, state: "hand" },
-        {id: 8, rank: Rank.Queen, suit: Suit.Spades, state: "hand" },
-        {id: 14, rank: Rank.Joker, suit: undefined, state: "hand" },
-        {id: 15, rank: Rank.Nine, suit: Suit.Spades, state: "hand" },
-        {id: 43, rank: Rank.Eight, suit: Suit.Diamonds, state: "hand" },
-        {id: 66, rank: Rank.Ace, suit: Suit.Diamonds, state: "deck"},
-        {id: 55, rank: Rank.Ace, suit: Suit.Hearts, state: "discard"}
-    ];
-
     //Multiplayer State
     const [playerName, setPlayerName] = useState<string | undefined>(undefined);
-    const [playerId, setPlayerId] = useState<string | undefined>(undefined);
-    const [gameId, setGameId] = useState<string | undefined>(undefined);
-    const [gameState, setGameState] = useState<GameState | undefined>(undefined);
-    const [playerState, setPlayerState] = useState<PlayerState | undefined>(undefined);
+    const [playerId, setPlayerId] = useState<string | null>(sessionStorage.getItem("playerId"));
+    const [gameId, setGameId] = useState<string | null>(sessionStorage.getItem("gameId"));
+    const [gameState, setGameState] = useState<GameState | null>(() => {
+        const state = sessionStorage.getItem("gameState");
+        return state ? JSON.parse(state) : null;
+    });
+    const [playerState, setPlayerState] = useState<PlayerState | null>(() => {
+        const state = sessionStorage.getItem("playerState");
+        return state ? JSON.parse(state) : null;
+    });
     const [isHost, setIsHost] = useState<boolean>(false);
     const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
     const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
@@ -141,7 +134,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
             setDeckSize(gameState.deckSize);
             setIsFinalRound(gameState.finalRound);
         }
-    }, [gameState, playerState])
+    }, [gameState, playerState, playerId])
 
 
     const URL = "ws://localhost:8080/karakal";
@@ -166,14 +159,17 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
                 client.subscribe(gameCreatedUrl, (msg: IMessage) => {
                     console.log("Game Created:", msg.body)
                     setGameId(JSON.parse(msg.body));
+                    sessionStorage.setItem("gameId", JSON.parse(msg.body));
                 });
                 client.subscribe(newPlayer, (msg : IMessage) => {
                     console.log("New Player:", msg.body);
                     setPlayerId(JSON.parse(msg.body));
+                    sessionStorage.setItem("playerId", msg.body);
                 })
                 client.subscribe(playerStateEndPoint, (msg: IMessage) => {
                     console.log("Player state:", msg.body);
                     setPlayerState(JSON.parse(msg.body));
+                    sessionStorage.setItem("playerState", msg.body);
                 })
             }
         })
@@ -188,17 +184,18 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
     //On game creation
     useEffect(() =>{
-        if (!gameId || !clientRef.current) return;
+        if (!gameId || !clientRef.current || !connected) return;
         const sub : StompSubscription = clientRef.current.subscribe(`${gameEndPoint}${gameId}`, (msg : IMessage) =>{
             console.log("Setting state:", msg.body);
             setGameState(JSON.parse(msg.body));
+            sessionStorage.setItem("gameState", msg.body);
         })
         const drawSub : StompSubscription = clientRef.current.subscribe(drawEndPoint, (msg : IMessage) => {
             console.log("Draw card:", msg.body);
             spawnCardInDeck(JSON.parse(msg.body));
         })
         return () => {sub.unsubscribe(); drawSub.unsubscribe()}
-    }, [clientRef, gameId])
+    }, [clientRef, gameId, connected])
 
     const createGame = () => {
         if (!clientRef.current) return;
