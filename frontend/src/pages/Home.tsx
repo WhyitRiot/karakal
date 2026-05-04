@@ -37,11 +37,6 @@ const Home = () => {
 
     return (
         <>
-            {!playerName ? <div className={"flex flex-col justify-center items-center mt-50 gap-4 font-[Gloria]"}>
-                <p>{playerName && `Hello ${playerName}`}</p>
-                <button className={"p-4 border rounded hover:bg-gray-400/20 hover:cursor-pointer active:bg-gray-400"}>Create Game</button>
-            </div> :
-
                 <div className={"flex flex-col h-screen w-screen items-center justify-center gap-2 font-[Gloria]"}>
                     <img className={"h-80 w-4/5 object-contain"} src={Karakal} alt="Karakal"/>
                     <p className={"text-5xl mb-5"}>Hello {playerName}</p>
@@ -50,8 +45,6 @@ const Home = () => {
                             <GifButton nonHover={Host} hover={HostHover} click={navigateToCreate} type={"button"} />
                     </div>
                 </div>
-            }
-
             <NewPlayerModal setPlayerName={setPlayerName} isVisible={isVisible} setIsVisible={showModal}/>
         </>
     );

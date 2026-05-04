@@ -8,7 +8,7 @@ import type {InferType} from "yup";
 import {yupResolver} from '@hookform/resolvers/yup';
 
 
-const NewPlayerModal = ({setPlayerName, isVisible, setIsVisible} : {setPlayerName : (name: string) => void, isVisible: boolean, setIsVisible : (bool : boolean) => void}) => {
+const LoginModal = ({setPlayerName, isVisible, setIsVisible} : {setPlayerName : (name: string) => void, isVisible: boolean, setIsVisible : (bool : boolean) => void}) => {
     const [isExiting, setIsExiting] = useState(false);
 
     const handleClose = () => {
@@ -43,7 +43,7 @@ const NewPlayerModal = ({setPlayerName, isVisible, setIsVisible} : {setPlayerNam
                               setIsExiting(false);
                       }}}
                 >
-                    <label className={"text-5xl"} htmlFor={"nameInput"}>What's your name?</label>
+                    <label className={"text-5xl"} htmlFor={"nameInput"}>Enter your name</label>
                     <div className={"flex flex-col items-center h-1/3 w-1/2"}>
                         <p className={"text-red-500 text-2xl h-1/4"}>{errors.name && errors.name.message}</p>
                         <input className={"border rounded text-4xl h-1/4 w-full text-center"}
@@ -58,4 +58,4 @@ const NewPlayerModal = ({setPlayerName, isVisible, setIsVisible} : {setPlayerNam
     );
 };
 
-export default NewPlayerModal;
+export default LoginModal;
