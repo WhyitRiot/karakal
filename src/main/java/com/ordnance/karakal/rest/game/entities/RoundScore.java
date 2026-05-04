@@ -4,6 +4,7 @@ import com.ordnance.karakal.rest.user.User;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "round_score")
 public class RoundScore {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

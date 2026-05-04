@@ -5,7 +5,9 @@ import com.ordnance.karakal.rest.game.entities.*;
 import com.ordnance.karakal.rest.game.entities.game_participant.GameParticipant;
 import com.ordnance.karakal.rest.user.User;
 import com.ordnance.karakal.rest.user.UserRepository;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class ReplayService {
     private UserRepository userRepository;
     private GameRepository gameRepository;
@@ -57,5 +60,19 @@ public class ReplayService {
         Round round = this.roundRepository.findFirstByGame_GameIdOrderByRoundNumberDesc(gameId);
         User user = this.userRepository.getReferenceById(playerId);
         return this.roundScoreRepository.save(new RoundScore(round, user, score));
+    }
+    public Game endGame(UUID gameId){
+        List<PlayerScore> totals = this.roundScoreRepository.getLeaderboard(gameId);
+        if (!totals.isEmpty()){
+            UUID winnerId = totals.getFirst().getPlayerId();
+            Game game = this.gameRepository.getReferenceById(gameId);
+            game.setWinner(this.userRepository.getReferenceById(winnerId));
+            game.setStatus("COMPLETED");
+            return this.gameRepository.save(game);
+        }
+        return null;
+    }
+    public List<PlayerScore> getLeaderboard(UUID gameId){
+        return this.roundScoreRepository.getLeaderboard(gameId);
     }
 }
