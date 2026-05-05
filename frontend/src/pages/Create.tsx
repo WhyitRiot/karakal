@@ -13,6 +13,12 @@ const Create = () => {
     const {gameId, playerName, createGame, joinGame} = context;
     const navigate = useNavigate();
     useEffect(()=>{
+        if (!playerName){
+            navigate("/")
+        }
+    },[navigate, playerName])
+
+    useEffect(()=>{
         if (!gameId) {
             createGame();
         }

@@ -1,10 +1,10 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import NewPlayerModal from "../components/NewPlayerModal.tsx";
 import Join from "../assets/Join.gif"
 import JoinHover from "../assets/JoinBlue.gif"
 import GifButton from "../components/GifButton.tsx"
-import Host from "../assets/Host.gif"
-import HostHover from "../assets/HostOrange.gif"
+import Host from "../assets/Host2.gif"
+import HostHover from "../assets/Host2Orange.gif"
 import Karakal from "../assets/Karakal2.gif"
 import {Link, useNavigate} from "react-router";
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
@@ -15,16 +15,7 @@ const Home = () => {
         throw Error("outside of provider!");
     }
     const navigate = useNavigate();
-    const {playerName, setName} = context;
-    const [isVisible, setIsVisible] = useState((playerName == undefined));
-
-    const showModal = (bool: boolean) =>{
-        setIsVisible(bool);
-    }
-
-    const setPlayerName = (name: string) =>{
-        setName(name);
-    }
+    const {playerName} = context;
 
     const navigateToJoin= () => {
         navigate("/join")
@@ -33,6 +24,12 @@ const Home = () => {
     const navigateToCreate = () => {
         navigate("/create")
     }
+
+    useEffect(()=>{
+        if (!playerName){
+            navigate("/")
+        }
+    },[navigate, playerName])
 
 
     return (
@@ -45,7 +42,6 @@ const Home = () => {
                             <GifButton nonHover={Host} hover={HostHover} click={navigateToCreate} type={"button"} />
                     </div>
                 </div>
-            <NewPlayerModal setPlayerName={setPlayerName} isVisible={isVisible} setIsVisible={showModal}/>
         </>
     );
 };

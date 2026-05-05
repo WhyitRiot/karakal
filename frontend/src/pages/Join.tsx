@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import * as yup from 'yup';
 import {type FieldValues, useForm} from 'react-hook-form'
 import GifButton from "../components/GifButton.tsx"
@@ -13,6 +13,13 @@ const Join = () => {
     if (!context) throw Error("outside of context!");
     const navigate = useNavigate();
     const {joinGame, setGameId, playerName} = context;
+
+    useEffect(()=>{
+        if (!playerName){
+            navigate("/")
+        }
+    },[navigate, playerName])
+
     const joinSchema = yup.object({
         gameId: yup.string().matches(
             /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/,

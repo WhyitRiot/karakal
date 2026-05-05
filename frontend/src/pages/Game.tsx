@@ -20,13 +20,24 @@ import WaitForHostModal from "../components/WaitForHostModal.tsx";
 import WaitForYourTurnModal from "../components/WaitForYourTurnModal.tsx";
 import RoundOverModal from "../components/RoundOverModal.tsx";
 import GameOverModal from "../components/GameOverModal.tsx";
+import {useNavigate} from "react-router";
 
 const MAX_VISIBLE_LAYERS = 10;
 
 const Game = () => {
     const context = useContext(GameStateContext);
     if (!context) throw Error("outside of provider!");
-    const{tableCards, setTableCards, playAction, callAction, stayAction, playerId, isHost, isGameStarted, isMyTurn, currentPlayerName, score, roundOver, gameOver, deckSize, isFinalRound, karakalPlayer} = context;
+    const{tableCards, setTableCards, playAction, callAction, stayAction,
+        playerId, isHost, isGameStarted, isMyTurn, currentPlayerName,
+        score, roundOver, gameOver, deckSize, isFinalRound, karakalPlayer,
+        playerName} = context;
+    const navigate = useNavigate();
+    useEffect(()=>{
+        if (!playerName){
+            navigate("/")
+        }
+    },[navigate, playerName])
+
     const[layers, setLayers] = useState(Math.min(MAX_VISIBLE_LAYERS, Math.ceil(deckSize/5)));
 
     const[isOpen, setIsOpen] = useState<boolean>(true);
@@ -123,7 +134,7 @@ const Game = () => {
     }
     return (
         <>
-        { isHost ? <StartGameModal isVisible={isOpen} setIsVisible={setIsOpen}/> : <WaitForHostModal waiting={isGameStarted}/>}
+        {!isGameStarted && isHost ? <StartGameModal isVisible={isOpen} setIsVisible={setIsOpen}/> : <WaitForHostModal waiting={isGameStarted}/>}
         { (!isMyTurn && isGameStarted) && <WaitForYourTurnModal waiting={isMyTurn} player={currentPlayerName} />}
         {roundOver && <RoundOverModal roundOver={roundOver}/>}
             {gameOver && <GameOverModal gameOver={gameOver}/>}

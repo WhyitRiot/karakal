@@ -9,6 +9,7 @@ import Karakal from "../assets/Karakal2.gif"
 import {Link, useNavigate} from "react-router";
 import {GameStateContext} from "../utilities/websocket/GameStateContext.tsx";
 import LoginModal from "../components/LoginModal.tsx";
+import * as PlayerService from "../utilities/RestAPIClient/PlayerService.ts"
 
 const Login = () => {
     const context = useContext(GameStateContext);
@@ -16,7 +17,7 @@ const Login = () => {
         throw Error("outside of provider!");
     }
     const navigate = useNavigate();
-    const {playerName, setName} = context;
+    const {playerName, setName, setUserId} = context;
     const [isNewPlayerVisible, setIsNewPlayerVisible] = useState(false);
     const [isLoginVisible, setIsLoginVisible] = useState(false);
 
@@ -32,18 +33,9 @@ const Login = () => {
         setName(name);
     }
 
-    const navigateToJoin= () => {
-        navigate("/join")
-    }
-
-    const navigateToCreate = () => {
-        navigate("/create")
-    }
-
     const navigateToHome = () => {
-        navigate("/")
+        navigate("/home")
     }
-
 
     return (
         <>
@@ -55,8 +47,8 @@ const Login = () => {
                     </div>
                 </div>
 
-            <NewPlayerModal setPlayerName={setPlayerName} isVisible={isNewPlayerVisible} setIsVisible={showNewPlayerModal}/>
-            <LoginModal setPlayerName={setPlayerName} isVisible={isLoginVisible} setIsVisible={showLoginModal}/>
+            <NewPlayerModal setPlayerName={setPlayerName} setPlayerId={setUserId} isVisible={isNewPlayerVisible} setIsVisible={showNewPlayerModal} navigate={navigateToHome}/>
+            <LoginModal setPlayerName={setPlayerName} setPlayerId={setUserId} isVisible={isLoginVisible} setIsVisible={showLoginModal} navigate={navigateToHome}/>
         </>
     );
 };
