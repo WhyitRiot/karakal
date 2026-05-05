@@ -1,3 +1,20 @@
 spring:
   application:
     name: karakal
+  datasource:
+    url: jdbc:postgresql://localhost:5433/karakaldb
+    driver-class-name: org.postgresql.Driver
+    username: karakal
+    password: replay
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: validate
+        type:
+          preferred_uuid_jdbc_type: UUID
+
+
+        show_sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration

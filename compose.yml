@@ -1,0 +1,19 @@
+services:
+  postgres-db:
+    container_name: karakal
+    image: postgres # use latest official postgres version
+    restart: always
+    volumes:
+      - ./postgres_data:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: karakal
+      POSTGRES_PASSWORD: replay
+      POSTGRES_DB: karakaldb
+      POSTGRES_HOST_AUTH_METHOD: password
+    ports:
+      - "5433:5432"
+
+volumes:
+  postgresql_data:
+    driver: local
+
