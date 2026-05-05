@@ -7,6 +7,8 @@ import java.util.List;
 public class Action {
     private List<Card> discard;
     private Card draw;
+    private boolean karakal;
+    private boolean stay;
 
     public List<Card> getDiscard() {
         return discard;
@@ -23,6 +25,12 @@ public class Action {
     public void setDraw(Card draw) {
         this.draw = draw;
     }
+    public void setKarakal(boolean karakal){
+        this.karakal = karakal;
+    }
+    public void setStay(boolean stay){
+        this.stay = stay;
+    }
 
     public Action() {
     }
@@ -30,5 +38,7 @@ public class Action {
     public Action(List<Card> discard, Card draw) {
         this.discard = discard;
         this.draw = draw;
+        this.karakal = false;
+        this.stay = false;
     }
 }

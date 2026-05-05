@@ -31,6 +31,10 @@ public class Round {
     @Column(name = "starting_hands", columnDefinition = "jsonb")
     private Map<UUID, List<Card>> startingHands;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "initial_discard", columnDefinition = "jsonb")
+    private Card initialDiscard;
+
     @Column(length = 20)
     private String status;
 
@@ -85,11 +89,20 @@ public class Round {
     public Round() {
     }
 
-    public Round(Game game, Integer roundNumber, List<Card> initialDeck, Map<UUID, List<Card>> startingHands, String status) {
+    public Round(Game game, Integer roundNumber, Card initialDiscard, List<Card> initialDeck, Map<UUID, List<Card>> startingHands, String status) {
         this.game = game;
         this.roundNumber = roundNumber;
+        this.initialDiscard = initialDiscard;
         this.initialDeck = initialDeck;
         this.startingHands = startingHands;
         this.status = status;
+    }
+
+    public Card getInitialDiscard() {
+        return initialDiscard;
+    }
+
+    public void setInitialDiscard(Card initialDiscard) {
+        this.initialDiscard = initialDiscard;
     }
 }

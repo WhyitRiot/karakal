@@ -13,11 +13,12 @@ import java.util.UUID;
 @Repository
 public interface RoundScoreRepository extends JpaRepository<RoundScore, Long> {
     @Query(
-            "SELECT rs.player.playerId as playerId, SUM(rs.score) as totalScore " +
+            "SELECT rs.player.playerId as playerId, rs.player.username, SUM(rs.score) as totalScore " +
                     "FROM RoundScore rs " +
                     "WHERE rs.round.game.gameId = :gameId " +
                     "GROUP BY rs.player.playerId " +
                     "ORDER BY totalScore ASC"
     )
     List<PlayerScore> getLeaderboard(@Param("gameId") UUID gameId);
+    List<RoundScore> findByRoundId(Long id);
 }

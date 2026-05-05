@@ -3,13 +3,16 @@ package com.ordnance.karakal.rest.user;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
+@Table(name = "\"user\"")
 public class User {
     @Id
+    @Column(name = "player_id")
     private UUID playerId;
 
     @Column(unique = true, nullable = false)
@@ -18,10 +21,10 @@ public class User {
     @Column(nullable = false)
     private Instant lastLogin;
 
-    public User(UUID playerId, String username, Instant lastLogin){
+    public User(UUID playerId, String username){
         this.playerId = playerId;
         this.username = username;
-        this.lastLogin = lastLogin;
+        this.lastLogin = Instant.now();
     }
 
     public UUID getPlayerId() {

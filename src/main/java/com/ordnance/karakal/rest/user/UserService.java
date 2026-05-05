@@ -1,5 +1,6 @@
 package com.ordnance.karakal.rest.user;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,6 +20,16 @@ public class UserService {
     }
     public User saveUser(User user){
         return userRepository.save(user);
+    }
+    public User createUser(String username){
+        Optional<User> foundUser = this.userRepository.findUserByUsername(username);
+        if (foundUser.isEmpty()){
+            UUID id = UuidCreator.getTimeOrderedEpoch();
+            User createdUser = new User(id, username);
+            return this.userRepository.save(createdUser);
+        } else{
+            return null;
+        }
     }
     public User updateUser(User user){
         Optional<User> foundUser = this.userRepository.findUserByPlayerId(user.getPlayerId());

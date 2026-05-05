@@ -3,6 +3,9 @@ package com.ordnance.karakal.rest.game;
 import com.ordnance.karakal.game.Card;
 import com.ordnance.karakal.rest.game.entities.*;
 import com.ordnance.karakal.rest.game.entities.game_participant.GameParticipant;
+import com.ordnance.karakal.rest.game.objects.GameOverview;
+import com.ordnance.karakal.rest.game.objects.GameReplay;
+import com.ordnance.karakal.rest.game.objects.RoundReplay;
 import com.ordnance.karakal.rest.user.User;
 import com.ordnance.karakal.rest.user.UserRepository;
 
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,6 +40,45 @@ public class ReplayService {
         this.gameEventRepository = gameEventRepository;
         this.roundScoreRepository = roundScoreRepository;
     }
+
+    public List<GameOverview> getAlLGamesByPlayerId(UUID playerId){
+        List<Game> games = gameRepository.findGamesByPlayerId(playerId);
+        List<GameOverview> gameOverviews = new ArrayList<>();
+        games.stream().map(game -> {
+            List<PlayerScore> leaderboard = roundScoreRepository.getLeaderboard(game.getGameId());
+            GameOverview overview = new GameOverview(game, leaderboard);
+            gameOverviews.add(overview);
+            return null;
+        });
+        return gameOverviews;
+    }
+
+    public GameReplay getReplay(UUID gameId){
+        Game game = gameRepository.getReferenceById(gameId);
+        List<User> players = gameParticipantRepository.findUsersByGameId(gameId);
+        List<Round> rounds = roundRepository.findByGameIdOrderByRoundNumber(gameId);
+        List<RoundReplay> roundReplays = rounds.stream().map(round -> {
+            List<GameEvent> events = gameEventRepository.findByGameIdAndRoundIdOrderBySequenceNumber(gameId, round.getId());
+            List<RoundScore> scores = roundScoreRepository.findByRoundId(round.getId());
+            return mapToRoundReplay(round,events,scores);
+        }).toList();
+        return mapToGameReplay(game, players, roundReplays);
+    }
+
+    public GameReplay mapToGameReplay(Game game, List<User> players, List<RoundReplay> replays){
+        return new GameReplay(game, players, replays);
+    }
+
+    public RoundReplay mapToRoundReplay(Round round, List<GameEvent> events, List<RoundScore> scores){
+        return new RoundReplay(round, events, scores);
+    }
+
+    public Integer getLastRoundNumber(UUID gameId){
+        Round round = this.roundRepository.findFirstByGame_GameIdOrderByRoundNumberDesc(gameId);
+        Integer lastSequence = this.gameEventRepository.findMaxSequenceByRoundId(round.getId());
+        return (lastSequence == null) ? 1 : lastSequence + 1;
+    }
+
     public Game createGame(UUID gameId){
         return this.gameRepository.save(new Game(gameId, "IN_PROGRESS", null));
     }
@@ -44,9 +87,10 @@ public class ReplayService {
         User user = this.userRepository.getReferenceById(playerId);
         return this.gameParticipantRepository.save(new GameParticipant(game, user));
     }
-    public Round newRound(UUID gameId, Integer roundNumber, List<Card> initialDeck, Map<UUID, List<Card>> startingHands){
+    public Round newRound(UUID gameId, Card initialDiscard, List<Card> initialDeck, Map<UUID, List<Card>> startingHands){
         Game game = this.gameRepository.getReferenceById(gameId);
-        return this.roundRepository.save(new Round(game, roundNumber, initialDeck, startingHands, "STARTED"));
+        int roundNumber = this.getLastRoundNumber(gameId);
+        return this.roundRepository.save(new Round(game, roundNumber, initialDiscard, initialDeck, startingHands, "STARTED"));
     }
     public GameEvent playAction(UUID gameId, UUID playerId, String drawType, Action action){
         Game game = this.gameRepository.getReferenceById(gameId);
