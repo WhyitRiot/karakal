@@ -10,6 +10,12 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
 
+    private UserHandshakeHandler userHandshakeHandler;
+
+    public WebSocketConfiguration(UserHandshakeHandler userHandshakeHandler){
+        this.userHandshakeHandler = userHandshakeHandler;
+    }
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config){
         config.enableSimpleBroker("/game", "/queue");
@@ -21,7 +27,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     public void registerStompEndpoints(StompEndpointRegistry registry){
         registry.addEndpoint("/karakal")
                 .setAllowedOriginPatterns("*")
-                .setHandshakeHandler(new UserHandshakeHandler());
+                .setHandshakeHandler(userHandshakeHandler);
     }
 
 }
