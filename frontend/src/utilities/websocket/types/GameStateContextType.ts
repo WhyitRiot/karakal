@@ -5,8 +5,9 @@ import type {Card} from "../../types/card.ts";
 import {type Dispatch, type SetStateAction, useState} from "react";
 
 export type GameStateContextType = {
-    playerName : string | undefined
-    playerId: string | null
+    playerName : string | null,
+    playerId: string | null,
+    setUserId : (id : string) => void,
     gameId : string | null,
     setGameId : (gameId : string) => void;
     gameState : GameState | null,

@@ -19,11 +19,12 @@ import join from "../../pages/Join.tsx";
 import {createPlayMessage, type PlayMessage} from "./messages/PlayMessage.ts";
 import {createStartNextRoundMessage} from "./messages/StartNextRoundMessage.ts";
 import {createStayMessage} from "./messages/StayMessage.ts";
+import * as PlayerClient from "../../utilities/RestAPIClient/PlayerService.ts"
 
 export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
     //Multiplayer State
-    const [playerName, setPlayerName] = useState<string | undefined>(undefined);
+    const [playerName, setPlayerName] = useState<string | null>(sessionStorage.getItem("playerName"));
     const [playerId, setPlayerId] = useState<string | null>(sessionStorage.getItem("playerId"));
     const [gameId, setGameId] = useState<string | null>(sessionStorage.getItem("gameId"));
     const [gameState, setGameState] = useState<GameState | null>(() => {
@@ -47,6 +48,10 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
     const [connected, setConnected] = useState(false);
     const [deckSize, setDeckSize] = useState(0);
     const [isFinalRound, setIsFinalRound] = useState(false);
+
+    const setUserId = (id : string) => {
+        setPlayerId(id);
+    }
 
     //Client-side state
 
@@ -151,8 +156,9 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
 
     //On first load
     useEffect(() =>{
+        if (!playerName) return;
         const client = new Client({
-            brokerURL: URL,
+            brokerURL: `${URL}?username=${encodeURIComponent(playerName ?? "")}`,
             reconnectDelay: 5000,
             onConnect: (frame: IFrame) => {
                 setConnected(true);
@@ -180,7 +186,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         console.log(clientRef.current);
 
         return () => {client.deactivate()};
-    }, [])
+    }, [playerName])
 
     //On game creation
     useEffect(() =>{
@@ -296,7 +302,9 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
             connected, tableCards, isHost, isGameStarted, isMyTurn,
             currentPlayerName, score, karakalPlayer, leaderboard,
             roundOver, players, gameOver, deckSize, isFinalRound,
-            setGameId, drawAction, discardAction, callAction, playAction, setTableCards, setName, createGame, joinGame, startGame, nextRoundAction, stayAction
+            setGameId, drawAction, discardAction, callAction, playAction,
+            setTableCards, setName, createGame, joinGame, startGame, nextRoundAction,
+            stayAction, setUserId
         }}>
             {children}
         </GameStateContext.Provider>
