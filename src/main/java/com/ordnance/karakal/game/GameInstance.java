@@ -70,6 +70,37 @@ public class GameInstance {
         return snapshot;
     }
 
+    public ReplayState getReplayState(){
+        ReplayState replay = new ReplayState();
+        replay.initialDeck = new ArrayList<>();
+        replay.startingHands = new HashMap<>();
+        for (long id: deck){
+            replay.initialDeck.add(cardMap.get(id));
+        }
+        for (UUID playerId : this.players){
+            List<Card> replayHand = new ArrayList<>();
+            List<Long> hand = this.playerMap.get(playerId).getHand();
+            for (long id : hand){
+                replayHand.add(this.cardMap.get(id));
+            }
+            replay.startingHands.put(playerId, replayHand);
+        }
+        replay.initialDiscard = this.cardMap.get(this.lastPlay.cardIds.getFirst());
+        return replay;
+    }
+
+    public List<Card> resolveCardsIdentity(List<Long> cardIds){
+        List<Card> resolvedCards = new ArrayList<>();
+        for (long id : cardIds){
+            resolvedCards.add(cardMap.get(id));
+        }
+        return resolvedCards;
+    }
+
+    public Card resolveCardIdentity(Long id){
+        return this.cardMap.get(id);
+    }
+
     public PlayerState getPlayerState(UUID playerId){
         PlayerState snapshot = new PlayerState();
         Player player = getPlayerByUUID(playerId);
@@ -323,40 +354,6 @@ public class GameInstance {
         }
         return true;
     }
-
-//    public boolean isStraight(List<Long> discard){
-//        int jokerCount = countJokers(discard);
-//        int index = 0;
-//        int prevRank = cardMap.get(discard.get(index)).getRank().getValue();
-//        while (prevRank == Rank.Joker.getValue()){
-//            prevRank = cardMap.get(discard.get(++index)).getRank().getValue();
-//        }
-//        Suit prevSuit = cardMap.get(discard.get(index++)).getSuit();
-//        Card card;
-//        Rank currentRank;
-//        Suit currentSuit;
-//        for (int i = 0; i < discard.size(); i++){
-//            card = cardMap.get(discard.get(i));
-//            currentRank = card.getRank();
-//            if (currentRank == Rank.Joker){
-//                continue;
-//            }
-//            currentSuit = card.getSuit();
-//            if (prevSuit != currentSuit){
-//                return false;
-//            }
-//            if (prevRank != currentRank.getValue() -1){
-//                if (jokerCount > 0){
-//                    jokerCount--;
-//                    prevRank++;
-//                }
-//                else{
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
 
     public boolean isRanked(List<Long> discard){
         Card first = cardMap.get(discard.getFirst());

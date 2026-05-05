@@ -36,3 +36,5 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 
 downloadCards.py
+#Postgres
+postgres_data/
