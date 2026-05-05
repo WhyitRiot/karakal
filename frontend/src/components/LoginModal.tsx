@@ -1,18 +1,24 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import * as yup from 'yup';
 import GifButton from "../components/GifButton.tsx"
 import Go from "../assets/Go.gif"
 import GoHover from "../assets/GoGreen.gif"
+import Back from "../assets/Back.gif"
+import BackHover from "../assets/BackOrange.gif"
 import {type FieldValues, useForm} from "react-hook-form";
 import type {InferType} from "yup";
 import {yupResolver} from '@hookform/resolvers/yup';
+import * as PlayerClient from "../utilities/RestAPIClient/PlayerService.ts";
+import type {User} from "../utilities/types/user.ts";
 
 
-const LoginModal = ({setPlayerName, isVisible, setIsVisible} : {setPlayerName : (name: string) => void, isVisible: boolean, setIsVisible : (bool : boolean) => void}) => {
+const LoginModal = ({setPlayerName, setPlayerId, isVisible, setIsVisible, navigate} : {setPlayerName : (name: string) => void, setPlayerId : (id : string) => void, isVisible: boolean, setIsVisible : (bool : boolean) => void, navigate: () => void}) => {
     const [isExiting, setIsExiting] = useState(false);
+    const [loginErrors, setLoginErrors] = useState<string | undefined>(undefined);
 
     const handleClose = () => {
         setIsExiting(true);
+        navigate();
     }
 
     const schema = yup.object({
@@ -25,11 +31,20 @@ const LoginModal = ({setPlayerName, isVisible, setIsVisible} : {setPlayerName : 
 
     type formData = InferType<typeof schema>;
 
+    const tryLogin = async (name : string) => {
+        const response : Response = await PlayerClient.login(name);
+        if (response.status === 404) {setLoginErrors("Username does not exist!"); return}
+        if (!response.ok) {setLoginErrors(response.status.toString()); return}
+        const user : User = await response.json();
+        setPlayerName(user.username);
+        setPlayerId(user.playerId);
+        handleClose();
+    }
+
     const submit = async (e: FieldValues) =>{
         const parsedData : formData = await schema.validate(e);
-        setPlayerName(parsedData.name);
+        await tryLogin(parsedData.name);
         reset();
-        handleClose();
     }
 
     return (
@@ -45,12 +60,13 @@ const LoginModal = ({setPlayerName, isVisible, setIsVisible} : {setPlayerName : 
                 >
                     <label className={"text-5xl"} htmlFor={"nameInput"}>Enter your name</label>
                     <div className={"flex flex-col items-center h-1/3 w-1/2"}>
-                        <p className={"text-red-500 text-2xl h-1/4"}>{errors.name && errors.name.message}</p>
+                        <p className={"text-red-500 text-2xl h-1/4"}>{(errors.name && errors.name.message) || (loginErrors && loginErrors)}</p>
                         <input className={"border rounded text-4xl h-1/4 w-full text-center"}
                                {...register("name")}
                                id={"nameInput"}
                                type={"text"}/>
                     </div>
+                    <GifButton nonHover={Back} hover={BackHover} type={"button"} click={() => setIsExiting(true)}/>
                     <GifButton hover={GoHover} nonHover={Go} type={"submit"}/>
                 </form>
             </div>

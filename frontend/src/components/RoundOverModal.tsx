@@ -32,12 +32,14 @@ const RoundOverModal = ({roundOver} : {roundOver: boolean}) => {
                     <div className={"flex flex-col gap-5 w-2/3"}>
                         <p className={"text-4xl self-center"}>Scores</p>
                         <table className={"text-3xl w-full"}>
+                            <tbody>
                             {leaderboard && leaderboard.map((item, index) => (
                                 <tr key={index} className={"border-b first:text-amber-300"}>
                                     <td>{item.name}</td>
                                     <td>{item.score}</td>
                                 </tr>
                             ))}
+                            </tbody>
                         </table>
                     </div>
                     <div className={"flex flex-row justify-center w-full"}>
