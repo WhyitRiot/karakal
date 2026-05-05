@@ -5,10 +5,12 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.security.Principal;
 
 @Controller
+@CrossOrigin("*")
 public class GameController{
     private final GameService gameService;
     private final MessageDispatcher messageDispatcher;

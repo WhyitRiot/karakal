@@ -1,9 +1,7 @@
 package com.ordnance.karakal.websocket;
 
-import com.ordnance.karakal.game.Card;
-import com.ordnance.karakal.game.GameInstance;
-import com.ordnance.karakal.game.GameState;
-import com.ordnance.karakal.game.PlayerState;
+import com.github.f4b6a3.uuid.UuidCreator;
+import com.ordnance.karakal.game.*;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -27,12 +25,27 @@ public class GameService {
         return this.games.get(gameId).getPlayerState(playerId);
     }
 
+    public ReplayState getReplayState(UUID gameId){
+        return this.games.get(gameId).getReplayState();
+    }
+
+    public boolean isGameOver(UUID gameId){
+        return this.games.get(gameId).isGameOver();
+    }
+
+    public List<Card> resolveCardsIdentity(UUID gameId, List<Long> cardIds){
+        return this.games.get(gameId).resolveCardsIdentity(cardIds);
+    }
+    public Card resolveCardIdentity(UUID gameId, Long id){
+        return this.games.get(gameId).resolveCardIdentity(id);
+    }
+
     public List<UUID> getAllPlayers(UUID gameId){
         return this.games.get(gameId).getPlayers();
     }
 
     public UUID createGame(String Id){
-        UUID gameId = UUID.randomUUID();
+        UUID gameId = UuidCreator.getTimeOrderedEpoch();
         this.games.put(gameId, new GameInstance(Id));
         return gameId;
     }
