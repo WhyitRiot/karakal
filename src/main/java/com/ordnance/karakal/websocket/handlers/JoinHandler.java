@@ -2,11 +2,11 @@ package com.ordnance.karakal.websocket.handlers;
 
 import com.ordnance.karakal.websocket.GameService;
 import com.ordnance.karakal.websocket.messages.JoinMessage;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -20,8 +20,11 @@ public class JoinHandler implements MessageHandler<JoinMessage>{
     @Override
     public void handle(JoinMessage message, Principal principal) {
         UUID playerId = UUID.fromString(principal.getName());
-        gameService.addPlayer(message.gameId, message.playerName, UUID.fromString(principal.getName()));
-        this.simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/new-player", playerId);
+        List<UUID> players = gameService.getAllPlayers(message.gameId);
+        if (!players.contains(playerId)){
+            gameService.addPlayer(message.gameId, message.playerName, UUID.fromString(principal.getName()));
+            this.simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/new-player", playerId);
+        }
         this.simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/player-state", this.gameService.getPlayerState(message.gameId, playerId));
         this.simpMessagingTemplate.convertAndSend("/game/" + message.gameId, this.gameService.currentState(message.gameId));
     }
