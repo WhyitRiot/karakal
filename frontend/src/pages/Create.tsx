@@ -19,10 +19,8 @@ const Create = () => {
     },[navigate, playerName])
 
     useEffect(()=>{
-        if (!gameId) {
-            createGame();
-        }
-    }, [gameId, createGame, joinGame])
+        createGame();
+    }, [createGame, joinGame])
 
     const handleJoin = () => {
         if (!gameId || !playerName) return;
