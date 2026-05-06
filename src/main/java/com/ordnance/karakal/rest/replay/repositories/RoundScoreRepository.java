@@ -1,7 +1,7 @@
-package com.ordnance.karakal.rest.game;
+package com.ordnance.karakal.rest.replay.repositories;
 
-import com.ordnance.karakal.rest.game.entities.PlayerScore;
-import com.ordnance.karakal.rest.game.entities.RoundScore;
+import com.ordnance.karakal.rest.replay.entities.PlayerScore;
+import com.ordnance.karakal.rest.replay.entities.RoundScore;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,10 +13,10 @@ import java.util.UUID;
 @Repository
 public interface RoundScoreRepository extends JpaRepository<RoundScore, Long> {
     @Query(
-            "SELECT rs.player.playerId as playerId, rs.player.username, SUM(rs.score) as totalScore " +
+            "SELECT rs.player.playerId as playerId, rs.player.username as username, SUM(rs.score) as totalScore " +
                     "FROM RoundScore rs " +
                     "WHERE rs.round.game.gameId = :gameId " +
-                    "GROUP BY rs.player.playerId " +
+                    "GROUP BY rs.player.playerId, rs.player.username " +
                     "ORDER BY totalScore ASC"
     )
     List<PlayerScore> getLeaderboard(@Param("gameId") UUID gameId);

@@ -1,7 +1,7 @@
-package com.ordnance.karakal.rest.game;
+package com.ordnance.karakal.rest.replay.repositories;
 
-import com.ordnance.karakal.rest.game.entities.game_participant.GameParticipant;
-import com.ordnance.karakal.rest.game.entities.game_participant.GameParticipantId;
+import com.ordnance.karakal.rest.replay.entities.game_participant.GameParticipant;
+import com.ordnance.karakal.rest.replay.entities.game_participant.GameParticipantId;
 import com.ordnance.karakal.rest.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

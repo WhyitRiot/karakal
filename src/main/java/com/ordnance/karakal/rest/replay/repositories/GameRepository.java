@@ -1,6 +1,6 @@
-package com.ordnance.karakal.rest.game;
+package com.ordnance.karakal.rest.replay.repositories;
 
-import com.ordnance.karakal.rest.game.entities.Game;
+import com.ordnance.karakal.rest.replay.entities.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
