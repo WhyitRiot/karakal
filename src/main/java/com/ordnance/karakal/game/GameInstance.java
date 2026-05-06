@@ -367,6 +367,8 @@ public class GameInstance {
         return true;
     }
 
+    public TreeMap<UUID, Integer> getLeaderboard(){return this.leaderboard;}
+
     public List<Long> getLastDiscard(){
         return this.lastPlay.cardIds;
     }

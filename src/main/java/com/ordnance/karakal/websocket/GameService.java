@@ -4,10 +4,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import com.ordnance.karakal.game.*;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class GameService {
@@ -84,5 +81,9 @@ public class GameService {
 
     public void stay(UUID gameId){
         this.games.get(gameId).stay();
+    }
+
+    public TreeMap<UUID, Integer> getLeaderboard(UUID gameId){
+        return this.games.get(gameId).getLeaderboard();
     }
 }
