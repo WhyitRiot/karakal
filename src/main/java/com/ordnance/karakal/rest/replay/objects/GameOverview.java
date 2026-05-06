@@ -1,7 +1,7 @@
-package com.ordnance.karakal.rest.game.objects;
+package com.ordnance.karakal.rest.replay.objects;
 
-import com.ordnance.karakal.rest.game.entities.Game;
-import com.ordnance.karakal.rest.game.entities.PlayerScore;
+import com.ordnance.karakal.rest.replay.entities.Game;
+import com.ordnance.karakal.rest.replay.entities.PlayerScore;
 
 import java.util.List;
 

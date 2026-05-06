@@ -1,6 +1,6 @@
-package com.ordnance.karakal.rest.game.objects;
+package com.ordnance.karakal.rest.replay.objects;
 
-import com.ordnance.karakal.rest.game.entities.Action;
+import com.ordnance.karakal.rest.replay.entities.Action;
 
 import java.time.Instant;
 import java.util.UUID;

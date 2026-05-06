@@ -1,6 +1,6 @@
-package com.ordnance.karakal.rest.game.entities.game_participant;
+package com.ordnance.karakal.rest.replay.entities.game_participant;
 
-import com.ordnance.karakal.rest.game.entities.Game;
+import com.ordnance.karakal.rest.replay.entities.Game;
 import com.ordnance.karakal.rest.user.User;
 import jakarta.persistence.*;
 

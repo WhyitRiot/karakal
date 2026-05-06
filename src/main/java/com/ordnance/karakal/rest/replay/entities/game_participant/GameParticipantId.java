@@ -1,4 +1,4 @@
-package com.ordnance.karakal.rest.game.entities.game_participant;
+package com.ordnance.karakal.rest.replay.entities.game_participant;
 
 import jakarta.persistence.Embeddable;
 

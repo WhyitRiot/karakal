@@ -1,4 +1,4 @@
-package com.ordnance.karakal.rest.game.objects;
+package com.ordnance.karakal.rest.replay.objects;
 
 import java.util.UUID;
 

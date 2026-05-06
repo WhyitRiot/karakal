@@ -1,13 +1,10 @@
-package com.ordnance.karakal.rest.game.objects;
+package com.ordnance.karakal.rest.replay.objects;
 
-import com.ordnance.karakal.game.Card;
-import com.ordnance.karakal.rest.game.entities.GameEvent;
-import com.ordnance.karakal.rest.game.entities.Round;
-import com.ordnance.karakal.rest.game.entities.RoundScore;
+import com.ordnance.karakal.rest.replay.entities.GameEvent;
+import com.ordnance.karakal.rest.replay.entities.Round;
+import com.ordnance.karakal.rest.replay.entities.RoundScore;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class RoundReplay {
     private Round round;
