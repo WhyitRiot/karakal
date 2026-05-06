@@ -1,9 +1,12 @@
 package com.ordnance.karakal.game;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Comparator;
 
 public class Card {
-    private final long id;
+    private final Long id;
     private final Rank rank;
     private final Suit suit;
 
@@ -19,12 +22,15 @@ public class Card {
         return this.id;
     }
 
-    public Card(Long id, Suit suit, Rank rank) {
-        if (rank == Rank.Joker && suit != null){
-            throw new IllegalArgumentException("Joker cannot have a suit");
-        }
-        if (suit == null && rank != Rank.Joker){
-            throw new IllegalArgumentException("Non-joker must have a suit");
+    @JsonCreator
+    public Card(@JsonProperty("id") Long id, @JsonProperty("suit") Suit suit, @JsonProperty("rank") Rank rank) {
+        if (rank != null){
+            if (rank == Rank.Joker && suit != null){
+                throw new IllegalArgumentException("Joker cannot have a suit");
+            }
+            if (suit == null && rank != Rank.Joker){
+                throw new IllegalArgumentException("Non-joker must have a suit");
+            }
         }
         this.id = id;
         this.rank = rank;
