@@ -134,7 +134,7 @@ const Game = () => {
     }
     return (
         <>
-        {!isGameStarted && isHost ? <StartGameModal isVisible={isOpen} setIsVisible={setIsOpen}/> : <WaitForHostModal waiting={isGameStarted}/>}
+        {!isGameStarted && (isHost ? <StartGameModal isVisible={isOpen} setIsVisible={setIsOpen}/> : <WaitForHostModal waiting={isGameStarted}/>)}
         { (!isMyTurn && isGameStarted) && <WaitForYourTurnModal waiting={isMyTurn} player={currentPlayerName} />}
         {roundOver && <RoundOverModal roundOver={roundOver}/>}
             {gameOver && <GameOverModal gameOver={gameOver}/>}
