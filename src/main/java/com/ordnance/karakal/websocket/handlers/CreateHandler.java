@@ -1,9 +1,8 @@
 package com.ordnance.karakal.websocket.handlers;
 
-import com.ordnance.karakal.rest.game.ReplayService;
+import com.ordnance.karakal.rest.replay.ReplayService;
 import com.ordnance.karakal.websocket.GameService;
 import com.ordnance.karakal.websocket.messages.CreateMessage;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 

@@ -1,8 +1,8 @@
 package com.ordnance.karakal.websocket.handlers;
 
 import com.ordnance.karakal.game.Card;
-import com.ordnance.karakal.rest.game.ReplayService;
-import com.ordnance.karakal.rest.game.entities.Action;
+import com.ordnance.karakal.rest.replay.ReplayService;
+import com.ordnance.karakal.rest.replay.entities.Action;
 import com.ordnance.karakal.websocket.GameService;
 import com.ordnance.karakal.websocket.messages.DRAW;
 import com.ordnance.karakal.websocket.messages.PlayMessage;
