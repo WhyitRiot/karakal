@@ -1,7 +1,7 @@
 package com.ordnance.karakal.websocket.handlers;
 
-import com.ordnance.karakal.rest.game.ReplayService;
-import com.ordnance.karakal.rest.game.entities.Action;
+import com.ordnance.karakal.rest.replay.ReplayService;
+import com.ordnance.karakal.rest.replay.entities.Action;
 import com.ordnance.karakal.websocket.GameService;
 import com.ordnance.karakal.websocket.messages.StayMessage;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -26,7 +26,7 @@ public class StayHandler implements MessageHandler<StayMessage> {
         Action playerAction = new Action();
         playerAction.setStay(true);
         this.simpMessagingTemplate.convertAndSend("/game/" + message.gameId, this.gameService.currentState(message.gameId));
-        this.replayService.playAction(message.gameId, UUID.fromString(principal.getName()), null, playerAction);
+        this.replayService.playAction(message.gameId, UUID.fromString(principal.getName()), "STAY", playerAction);
         if (this.gameService.isGameOver(message.gameId)){
             this.replayService.endGame(message.gameId);
         }

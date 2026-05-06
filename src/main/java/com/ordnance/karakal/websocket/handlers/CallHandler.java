@@ -1,10 +1,9 @@
 package com.ordnance.karakal.websocket.handlers;
 
-import com.ordnance.karakal.rest.game.ReplayService;
-import com.ordnance.karakal.rest.game.entities.Action;
+import com.ordnance.karakal.rest.replay.ReplayService;
+import com.ordnance.karakal.rest.replay.entities.Action;
 import com.ordnance.karakal.websocket.GameService;
 import com.ordnance.karakal.websocket.messages.CallMessage;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +25,6 @@ public class CallHandler implements MessageHandler<CallMessage>{
         Action playerAction = new Action();
         playerAction.setKarakal(true);
         simpMessagingTemplate.convertAndSend("/game/" + message.gameId.toString(), this.gameService.currentState(message.gameId));
-        this.replayService.playAction(message.gameId, UUID.fromString(principal.getName()), null, playerAction);
+        this.replayService.playAction(message.gameId, UUID.fromString(principal.getName()), "KARAKAL", playerAction);
     }
 }
