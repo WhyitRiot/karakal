@@ -1,9 +1,10 @@
 import React from 'react';
+import type {PlayerScore} from "../utilities/context/types/PlayerScore.ts";
 
 type GameCardProps = {
     date : string,
     gameId: string,
-    leaderboard : {name: string, score: number | string}[]| undefined
+    leaderboard : PlayerScore[]
 }
 
 const GameCard = ({date, gameId, leaderboard} : GameCardProps) => {
@@ -18,8 +19,8 @@ const GameCard = ({date, gameId, leaderboard} : GameCardProps) => {
                     <tbody>
                         {leaderboard && leaderboard.map((item, index) => (
                             <tr key={index} className={"border-b first:text-amber-300"}>
-                                <td>{item.name}</td>
-                                <td>{item.score}</td>
+                                <td>{item.username}</td>
+                                <td>{item.totalScore}</td>
                             </tr>
                         ))}
                     </tbody>

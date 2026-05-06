@@ -1,6 +1,6 @@
 export type Game = {
     gameId: string,
-    date : string,
+    createdAt : string,
     status: string,
     winner: string
 }

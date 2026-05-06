@@ -44,14 +44,10 @@ public class ReplayService {
 
     public List<GameOverview> getAlLGamesByPlayerId(UUID playerId){
         List<Game> games = gameRepository.findGamesByPlayerId(playerId);
-        List<GameOverview> gameOverviews = new ArrayList<>();
-        games.stream().map(game -> {
+        return games.stream().map(game -> {
             List<PlayerScore> leaderboard = roundScoreRepository.getLeaderboard(game.getGameId());
-            GameOverview overview = new GameOverview(game, leaderboard);
-            gameOverviews.add(overview);
-            return null;
-        });
-        return gameOverviews;
+            return new GameOverview(game, leaderboard);
+        }).toList();
     }
 
     public GameReplay getReplay(UUID gameId){

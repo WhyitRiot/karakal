@@ -1,5 +1,7 @@
 package com.ordnance.karakal.rest.replay.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ordnance.karakal.rest.user.User;
 import jakarta.persistence.*;
 
@@ -20,8 +22,8 @@ public class Game {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "winner_id")
     private User winner;
-
-    public Game(UUID gameId, String status, User winner) {
+    @JsonCreator
+    public Game(@JsonProperty("gameId") UUID gameId, @JsonProperty("status") String status, @JsonProperty("winner") User winner) {
         this.gameId = gameId;
         this.status = status;
         this.winner = winner;

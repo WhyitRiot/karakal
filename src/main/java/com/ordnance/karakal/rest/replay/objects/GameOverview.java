@@ -9,16 +9,16 @@ public class GameOverview {
     private Game game;
     private List<PlayerScore> leaderboard;
 
-    public Game getGames() {
+    public Game getGame() {
         return game;
     }
 
-    public List<PlayerScore> getReplay() {
+    public List<PlayerScore> getLeaderboard() {
         return leaderboard;
     }
 
     public GameOverview(Game games, List<PlayerScore> leaderboard) {
-        this.game = game;
+        this.game = games;
         this.leaderboard = leaderboard;
     }
 }

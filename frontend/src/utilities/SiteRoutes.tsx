@@ -6,6 +6,7 @@ import Create from "../pages/Create.tsx";
 import Game from "../pages/Game.tsx";
 import Login from "../pages/Login.tsx";
 import Replay from "../pages/Replay.tsx";
+import {ReplayContextProvider} from "./context/ReplayContextProvider.tsx";
 
 const SiteRoutes = () => {
     return (
@@ -15,7 +16,7 @@ const SiteRoutes = () => {
             <Route path={"/join"} element={<Join/>}/>
             <Route path={"/create"} element={<Create/>}/>
             <Route path={"/game"} element={<Game/>}/>
-            <Route path={"/replay"} element={<Replay />}/>
+            <Route path={"/replay"} element={<ReplayContextProvider><Replay /></ReplayContextProvider>}/>
         </Routes>
     );
 };
