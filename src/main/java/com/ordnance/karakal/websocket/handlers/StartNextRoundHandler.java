@@ -1,7 +1,7 @@
 package com.ordnance.karakal.websocket.handlers;
 
 import com.ordnance.karakal.game.ReplayState;
-import com.ordnance.karakal.rest.game.ReplayService;
+import com.ordnance.karakal.rest.replay.ReplayService;
 import com.ordnance.karakal.websocket.GameService;
 import com.ordnance.karakal.websocket.messages.StartNextRoundMessage;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.UUID;
 
 @Component
@@ -30,6 +31,10 @@ public class StartNextRoundHandler implements MessageHandler<StartNextRoundMessa
         }
         this.simpMessagingTemplate.convertAndSend("/game/" + message.gameId, this.gameService.currentState(message.gameId));
         ReplayState replay = this.gameService.getReplayState(message.gameId);
+        TreeMap<UUID, Integer> leaderboard = this.gameService.getLeaderboard(message.gameId);
+        for (UUID id : leaderboard.keySet()){
+            this.replayService.enterPlayerScore(message.gameId, id, leaderboard.get(id));
+        }
         this.replayService.newRound(message.gameId, replay.initialDiscard, replay.initialDeck, replay.startingHands);
     }
 }
