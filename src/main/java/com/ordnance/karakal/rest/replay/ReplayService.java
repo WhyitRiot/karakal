@@ -1,18 +1,18 @@
-package com.ordnance.karakal.rest.game;
+package com.ordnance.karakal.rest.replay;
 
 import com.ordnance.karakal.game.Card;
-import com.ordnance.karakal.rest.game.entities.*;
-import com.ordnance.karakal.rest.game.entities.game_participant.GameParticipant;
-import com.ordnance.karakal.rest.game.objects.GameOverview;
-import com.ordnance.karakal.rest.game.objects.GameReplay;
-import com.ordnance.karakal.rest.game.objects.RoundReplay;
+import com.ordnance.karakal.rest.replay.entities.*;
+import com.ordnance.karakal.rest.replay.entities.game_participant.GameParticipant;
+import com.ordnance.karakal.rest.replay.objects.GameOverview;
+import com.ordnance.karakal.rest.replay.objects.GameReplay;
+import com.ordnance.karakal.rest.replay.objects.RoundReplay;
+import com.ordnance.karakal.rest.replay.repositories.*;
 import com.ordnance.karakal.rest.user.User;
 import com.ordnance.karakal.rest.user.UserRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +39,7 @@ public class ReplayService {
         this.roundRepository = roundRepository;
         this.gameEventRepository = gameEventRepository;
         this.roundScoreRepository = roundScoreRepository;
+        this.userRepository = userRepository;
     }
 
     public List<GameOverview> getAlLGamesByPlayerId(UUID playerId){
@@ -75,7 +76,11 @@ public class ReplayService {
 
     public Integer getLastRoundNumber(UUID gameId){
         Round round = this.roundRepository.findFirstByGame_GameIdOrderByRoundNumberDesc(gameId);
-        Integer lastSequence = this.gameEventRepository.findMaxSequenceByRoundId(round.getId());
+        if (round == null){
+            return 1;
+        }
+        Integer lastSequence = this.roundRepository.findLastRoundNumber(gameId);
+//        Integer lastSequence = this.gameEventRepository.findMaxSequenceByRoundId(round.getId());
         return (lastSequence == null) ? 1 : lastSequence + 1;
     }
 
