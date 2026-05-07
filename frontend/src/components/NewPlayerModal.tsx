@@ -7,7 +7,7 @@ import {type FieldValues, useForm} from "react-hook-form";
 import type {InferType} from "yup";
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as PlayerService from "../utilities/RestAPIClient/PlayerService.ts"
-import type {User} from "../utilities/types/user.ts";
+import type {User} from "../utilities/context/types/user.ts";
 import Back from "../assets/Back.gif";
 import BackHover from "../assets/BackOrange.gif";
 

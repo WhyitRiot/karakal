@@ -1,4 +1,4 @@
-import type {User, UserRequest} from "../types/user.ts";
+import type {User, UserRequest} from "../context/types/User.ts";
 
 const baseURL = "http://localhost:8080/"
 

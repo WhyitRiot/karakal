@@ -9,7 +9,7 @@ import {type FieldValues, useForm} from "react-hook-form";
 import type {InferType} from "yup";
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as PlayerClient from "../utilities/RestAPIClient/PlayerService.ts";
-import type {User} from "../utilities/types/user.ts";
+import type {User} from "../utilities/context/types/user.ts";
 
 
 const LoginModal = ({setPlayerName, setPlayerId, isVisible, setIsVisible, navigate} : {setPlayerName : (name: string) => void, setPlayerId : (id : string) => void, isVisible: boolean, setIsVisible : (bool : boolean) => void, navigate: () => void}) => {

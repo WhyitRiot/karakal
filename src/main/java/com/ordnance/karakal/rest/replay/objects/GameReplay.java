@@ -7,24 +7,28 @@ import java.util.List;
 
 public class GameReplay {
     private Game game;
-    private List<User> player;
-    private List<RoundReplay> roundReplays;
+    private List<User> players;
+    private List<ScoresReplay> results;
+    private List<RoundReplay> rounds;
 
     public Game getGame() {
         return game;
     }
 
-    public List<User> getPlayer() {
-        return player;
+    public List<User> getPlayers() {
+        return players;
     }
 
     public List<RoundReplay> getRoundReplays() {
-        return roundReplays;
+        return rounds;
     }
 
-    public GameReplay(Game game, List<User> player, List<RoundReplay> roundReplays) {
+    public List<ScoresReplay> getResults() {return results;}
+
+    public GameReplay(Game game, List<User> players, List<ScoresReplay> results, List<RoundReplay> rounds) {
         this.game = game;
-        this.player = player;
-        this.roundReplays = roundReplays;
+        this.results = results;
+        this.players = players;
+        this.rounds = rounds;
     }
 }

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.UUID;
+
 @Entity
 public class GameEvent {
     @Id
@@ -60,6 +62,10 @@ public class GameEvent {
     public Integer getSequenceNumber() {
         return sequenceNumber;
     }
+
+    public User getPlayer() {return player;}
+    public UUID getPlayerId(){return player.getPlayerId();}
+    public String getPlayerUsername(){return player.getUsername();}
 
     public void setSequenceNumber(Integer sequenceNumber) {
         this.sequenceNumber = sequenceNumber;

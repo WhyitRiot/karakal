@@ -1,6 +1,7 @@
 package com.ordnance.karakal.rest.replay;
 
 import com.ordnance.karakal.rest.replay.objects.GameOverview;
+import com.ordnance.karakal.rest.replay.objects.GameReplay;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,5 +25,11 @@ public class ReplayController {
     public ResponseEntity<List<GameOverview>> getReplaysByPlayerId(@PathVariable UUID playerId){
         List<GameOverview> gameOverviews = this.replayService.getAlLGamesByPlayerId(playerId);
         return ResponseEntity.ok(gameOverviews);
+    }
+
+    @GetMapping("/game/{gameId}")
+    public ResponseEntity<GameReplay> getReplayByGameId(@PathVariable UUID gameId){
+        GameReplay replay = this.replayService.getReplay(gameId);
+        return ResponseEntity.ok(replay);
     }
 }

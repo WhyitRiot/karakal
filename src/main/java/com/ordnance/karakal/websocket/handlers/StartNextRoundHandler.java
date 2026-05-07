@@ -33,7 +33,7 @@ public class StartNextRoundHandler implements MessageHandler<StartNextRoundMessa
         ReplayState replay = this.gameService.getReplayState(message.gameId);
         TreeMap<UUID, Integer> leaderboard = this.gameService.getLeaderboard(message.gameId);
         for (UUID id : leaderboard.keySet()){
-            this.replayService.enterPlayerScore(message.gameId, id, leaderboard.get(id));
+            this.replayService.enterPlayerScore(message.gameId, id, Long.valueOf(leaderboard.get(id)));
         }
         this.replayService.newRound(message.gameId, replay.initialDiscard, replay.initialDeck, replay.startingHands);
     }

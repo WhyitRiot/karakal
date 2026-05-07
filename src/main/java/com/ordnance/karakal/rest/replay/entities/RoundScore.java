@@ -3,6 +3,8 @@ package com.ordnance.karakal.rest.replay.entities;
 import com.ordnance.karakal.rest.user.User;
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "round_score")
 public class RoundScore {
@@ -19,7 +21,7 @@ public class RoundScore {
     private User player;
 
     @Column(nullable = false)
-    private Integer score;
+    private Long score;
 
     public Long getId() {
         return id;
@@ -37,18 +39,30 @@ public class RoundScore {
         this.round = round;
     }
 
-    public Integer getScore() {
+    public Long getScore() {
         return score;
     }
 
-    public void setScore(Integer score) {
+    public void setScore(Long score) {
         this.score = score;
+    }
+
+    public User getPlayer() {
+        return player;
+    }
+
+    public UUID getPlayerId(){
+        return player.getPlayerId();
+    }
+
+    public String getPlayerUsername(){
+        return player.getUsername();
     }
 
     public RoundScore() {
     }
 
-    public RoundScore(Round round, User user, Integer score) {
+    public RoundScore(Round round, User user, Long score) {
         this.round = round;
         this.score = score;
         this.player = user;

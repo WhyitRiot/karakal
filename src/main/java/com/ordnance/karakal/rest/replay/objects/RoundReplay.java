@@ -1,33 +1,34 @@
 package com.ordnance.karakal.rest.replay.objects;
 
+import com.ordnance.karakal.game.Card;
 import com.ordnance.karakal.rest.replay.entities.GameEvent;
 import com.ordnance.karakal.rest.replay.entities.Round;
 import com.ordnance.karakal.rest.replay.entities.RoundScore;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class RoundReplay {
-    private Round round;
-    List<GameEvent> events;
+    List<Card> initialDeck;
+    Map<UUID, List<Card>> startingHands;
+    List<EventsReplay> events;
+    List<ScoresReplay> scores;
 
-    public Round getRound() {
-        return round;
-    }
+    public Map<UUID, List<Card>> getStartingHands(){return startingHands;}
 
-    public List<GameEvent> getEvents() {
+    public List<Card> getInitialDeck(){return initialDeck;}
+
+    public List<EventsReplay> getEvents() {
         return events;
     }
 
-    public List<RoundScore> getScores() {
-        return scores;
-    }
+    public List<ScoresReplay> getScores(){return scores;}
 
-    public RoundReplay(Round round, List<GameEvent> events, List<RoundScore> scores) {
-        this.round = round;
+    public RoundReplay(List<Card> initialDeck, Map<UUID, List<Card>>startingHands, List<EventsReplay> events, List<ScoresReplay> scores) {
+        this.initialDeck = initialDeck;
+        this.startingHands = startingHands;
         this.events = events;
         this.scores = scores;
     }
-
-    List<RoundScore> scores;
-
 }

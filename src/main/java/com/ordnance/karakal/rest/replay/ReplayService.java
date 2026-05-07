@@ -3,9 +3,7 @@ package com.ordnance.karakal.rest.replay;
 import com.ordnance.karakal.game.Card;
 import com.ordnance.karakal.rest.replay.entities.*;
 import com.ordnance.karakal.rest.replay.entities.game_participant.GameParticipant;
-import com.ordnance.karakal.rest.replay.objects.GameOverview;
-import com.ordnance.karakal.rest.replay.objects.GameReplay;
-import com.ordnance.karakal.rest.replay.objects.RoundReplay;
+import com.ordnance.karakal.rest.replay.objects.*;
 import com.ordnance.karakal.rest.replay.repositories.*;
 import com.ordnance.karakal.rest.user.User;
 import com.ordnance.karakal.rest.user.UserRepository;
@@ -53,21 +51,33 @@ public class ReplayService {
     public GameReplay getReplay(UUID gameId){
         Game game = gameRepository.getReferenceById(gameId);
         List<User> players = gameParticipantRepository.findUsersByGameId(gameId);
+        List<ScoresReplay> leaderboard = this.getLeaderboard(gameId)
+                .stream().map(score -> {
+                    return new ScoresReplay(score.getPlayerId(), score.getUsername(), score.getTotalScore());
+                }).toList();
         List<Round> rounds = roundRepository.findByGameIdOrderByRoundNumber(gameId);
         List<RoundReplay> roundReplays = rounds.stream().map(round -> {
-            List<GameEvent> events = gameEventRepository.findByGameIdAndRoundIdOrderBySequenceNumber(gameId, round.getId());
-            List<RoundScore> scores = roundScoreRepository.findByRoundId(round.getId());
-            return mapToRoundReplay(round,events,scores);
+            List<Card> initialDeck = round.getInitialDeck();
+            Map<UUID, List<Card>> startingHands = round.getStartingHands();
+            List<EventsReplay> events = gameEventRepository.findByGameIdAndRoundIdOrderBySequenceNumber(gameId, round.getId())
+                    .stream().map(event -> {
+                        return new EventsReplay(event.getSequenceNumber(), event.getPlayerId(), event.getPlayerUsername(), event.getDrawType(), event.getActionData());
+                    }).toList();
+            List<ScoresReplay> scores = roundScoreRepository.findByRoundId(round.getId())
+                    .stream().map(score -> {
+                        return new ScoresReplay(score.getPlayerId(), score.getPlayerUsername(), score.getScore());
+                    }).toList();
+            return mapToRoundReplay(initialDeck, startingHands, events, scores);
         }).toList();
-        return mapToGameReplay(game, players, roundReplays);
+        return mapToGameReplay(game, players, leaderboard, roundReplays);
     }
 
-    public GameReplay mapToGameReplay(Game game, List<User> players, List<RoundReplay> replays){
-        return new GameReplay(game, players, replays);
+    public GameReplay mapToGameReplay(Game game, List<User> players, List<ScoresReplay> results, List<RoundReplay> replays){
+        return new GameReplay(game, players, results, replays);
     }
 
-    public RoundReplay mapToRoundReplay(Round round, List<GameEvent> events, List<RoundScore> scores){
-        return new RoundReplay(round, events, scores);
+    public RoundReplay mapToRoundReplay(List<Card> initialDeck, Map<UUID, List<Card>> startingHands, List<EventsReplay> events, List<ScoresReplay> scores){
+        return new RoundReplay(initialDeck, startingHands, events, scores);
     }
 
     public Integer getLastRoundNumber(UUID gameId){
@@ -101,7 +111,7 @@ public class ReplayService {
         int nextSequence = (lastSequence == null) ? 1 : lastSequence + 1;
         return this.gameEventRepository.save(new GameEvent(game, user, round, nextSequence, drawType, action));
     }
-    public RoundScore enterPlayerScore(UUID gameId, UUID playerId, Integer score){
+    public RoundScore enterPlayerScore(UUID gameId, UUID playerId, Long score){
         Round round = this.roundRepository.findFirstByGame_GameIdOrderByRoundNumberDesc(gameId);
         User user = this.userRepository.getReferenceById(playerId);
         return this.roundScoreRepository.save(new RoundScore(round, user, score));

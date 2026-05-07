@@ -1,9 +1,5 @@
 export type PlayerScore = {
    playerId : string,
    username: string,
-   totalScore : number
+   score : number
 }
-
-// UUID getPlayerId();
-// String getUsername();
-// Long getTotalScore();
