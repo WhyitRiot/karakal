@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useState} from 'react';
 import * as yup from 'yup';
 import GifButton from "../components/GifButton.tsx"
 import Go from "../assets/Go.gif"
@@ -9,7 +9,7 @@ import {type FieldValues, useForm} from "react-hook-form";
 import type {InferType} from "yup";
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as PlayerClient from "../utilities/RestAPIClient/PlayerService.ts";
-import type {User} from "../utilities/context/types/user.ts";
+import type {User} from "../utilities/context/types/User.ts";
 
 
 const LoginModal = ({setPlayerName, setPlayerId, isVisible, setIsVisible, navigate} : {setPlayerName : (name: string) => void, setPlayerId : (id : string) => void, isVisible: boolean, setIsVisible : (bool : boolean) => void, navigate: () => void}) => {

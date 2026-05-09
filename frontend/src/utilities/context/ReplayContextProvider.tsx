@@ -7,7 +7,7 @@ import type {GameReplay} from "./types/GameReplay.ts";
 
 export const ReplayContextProvider = ({children} : {children: React.ReactNode}) => {
     const [games, setGames] = useState<GameOverview[]>([]);
-    const [replay, setReplay] = useState<any>();
+    const [replay, setReplay] = useState<GameReplay | undefined>(undefined);
     const context = useContext(GameStateContext);
     if (!context) throw Error("outside of provider!");
     const {playerId} = context;
@@ -24,6 +24,10 @@ export const ReplayContextProvider = ({children} : {children: React.ReactNode}) 
         console.log(replay);
     }
 
+    const setCurrentReplay = async (gameId : string) => {
+        await fetchGameReplay(gameId);
+    }
+
     useEffect(() => {
         if (games.length === 0) return;
         fetchGameReplay(games[0].game.gameId);
@@ -38,7 +42,7 @@ export const ReplayContextProvider = ({children} : {children: React.ReactNode}) 
     },[playerId])
 
     return (
-        <ReplayContext.Provider value={{games
+        <ReplayContext.Provider value={{games, replay, fetchGameOverviews, fetchGameReplay, setCurrentReplay
         }}>
             {children}
         </ReplayContext.Provider>
