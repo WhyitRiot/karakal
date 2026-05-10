@@ -24,7 +24,7 @@ const Replay = () => {
                     )}
                 </div>
             </div>
-            {replay && <GameReplayModal gameReplay={replay} visible={isVisible}/>}
+            {replay && <GameReplayModal key={replay.game.gameId} gameReplay={replay} visible={isVisible}/>}
         </>
 
     );

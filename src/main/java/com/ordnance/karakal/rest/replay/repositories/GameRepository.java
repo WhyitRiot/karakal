@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface GameRepository extends JpaRepository<Game, UUID> {
     @Query(
-            "SELECT DISTINCT gp.game FROM GameParticipant gp WHERE gp.user.playerId = :playerId"
+            "SELECT DISTINCT gp.game FROM GameParticipant gp WHERE gp.user.playerId = :playerId AND gp.game.deleted = false"
     )
     List<Game> findGamesByPlayerId(@Param("playerId") UUID playerId);
 }

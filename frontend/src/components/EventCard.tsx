@@ -6,14 +6,20 @@ import ReplayCardItem from "./ReplayCardItem.tsx"
 const EventCard = ({eventItem} : {eventItem : GameEvent}) => {
     return (
         <div className={"flex flex-col gap-5"}>
-            <div>
-                <p>{eventItem.username + "'s turn"}</p>
-                { (eventItem.action_type === "DECK" || eventItem.action_type === "DISCARD") ?
-                    <>
-                        <p>Discard:</p>
-                        <CardReplayDisplay hand={eventItem.action.discard}/>
-                        <p>{eventItem.action.action_type === "DISCARD" ? "Draw from Discard" : "Draw from Deck"}</p>
-                        <ReplayCardItem card={eventItem.action.draw}/>
+            <div className='flex flex-col gap-3'>
+                <p className='border-b'>{eventItem.username + "'s turn"}</p>
+                { (eventItem.action.discard && eventItem.action.draw) ?
+                    <>  
+                    <div className='flex flex-row justify-between'>
+                        <div className='flex flex-col'>
+                            <p>Discard:</p>
+                            <CardReplayDisplay hand={eventItem.action.discard}/>
+                        </div>
+                        <div className='flex flex-col'>
+                            <p>{eventItem.action_type === "DISCARD" ? "Draw from Discard" : "Draw from Deck"}</p>
+                            <ReplayCardItem card={eventItem.action.draw}/>
+                        </div>
+                    </div>
                     </>
                     :
                     <>
@@ -25,7 +31,9 @@ const EventCard = ({eventItem} : {eventItem : GameEvent}) => {
                         </p>
                         </>
                             :
-                            <><p>STAY</p></>
+                        <>
+                        <p>STAY</p>
+                        </>
                     }
                     </>
                 }

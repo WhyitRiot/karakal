@@ -60,7 +60,7 @@ import queenClub from "../assets/cards/queenClub.jpg"
 import kingClub from "../assets/cards/kingClub.jpg"
 
 import {Rank} from "./types/rank.ts"
-import {type Card, getCardRank} from "./types/card.ts";
+import {type Card, getCardRank, rankMap} from "./types/card.ts";
 import React from "react";
 import {Suit} from "./types/suit.ts";
 
@@ -152,6 +152,7 @@ export const Clubs = {
     queen: queenClub,
     king: kingClub
 };
+
 
 export const getCardStyling = (card : Card) =>{
     if (card.suit === undefined || card.suit === null){

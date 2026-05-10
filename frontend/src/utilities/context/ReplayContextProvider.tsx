@@ -24,8 +24,9 @@ export const ReplayContextProvider = ({children} : {children: React.ReactNode}) 
         console.log(replay);
     }
 
-    const setCurrentReplay = async (gameId : string) => {
-        await fetchGameReplay(gameId);
+    const deleteGameOverview = async (gameId: string) => {
+        await ReplayClient.deleteGame(gameId);
+        setGames(prev => prev.filter(item => item.game.gameId != gameId));
     }
 
     useEffect(() => {
@@ -42,7 +43,7 @@ export const ReplayContextProvider = ({children} : {children: React.ReactNode}) 
     },[playerId])
 
     return (
-        <ReplayContext.Provider value={{games, replay, fetchGameOverviews, fetchGameReplay, setCurrentReplay
+        <ReplayContext.Provider value={{games, replay, fetchGameOverviews, fetchGameReplay, deleteGameOverview
         }}>
             {children}
         </ReplayContext.Provider>

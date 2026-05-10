@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -129,5 +130,15 @@ public class ReplayService {
     }
     public List<PlayerScore> getLeaderboard(UUID gameId){
         return this.roundScoreRepository.getLeaderboard(gameId);
+    }
+
+    public Game deleteGame(UUID gameId){
+        Optional<Game> foundGame = this.gameRepository.findById(gameId);
+        if (foundGame.isPresent()){
+            Game updatedGame = foundGame.get();
+            updatedGame.setDeleted(true);
+            return this.gameRepository.save(updatedGame);
+        }
+        return null;
     }
 }

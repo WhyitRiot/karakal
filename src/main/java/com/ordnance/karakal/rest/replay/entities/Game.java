@@ -22,6 +22,9 @@ public class Game {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "winner_id")
     private User winner;
+
+    private boolean deleted = false;
+
     @JsonCreator
     public Game(@JsonProperty("gameId") UUID gameId, @JsonProperty("status") String status, @JsonProperty("winner") User winner) {
         this.gameId = gameId;
@@ -30,6 +33,14 @@ public class Game {
     }
 
     public Game() {
+    }
+
+    public void setDeleted(boolean bool){
+        this.deleted = bool;
+    }
+
+    public boolean getDeleted(){
+        return deleted;
     }
 
     public UUID getGameId() {
