@@ -6,5 +6,5 @@ export type ReplayContextType = {
     replay: GameReplay | undefined
     fetchGameOverviews: (playerId: string) => void;
     fetchGameReplay: (gameId: string) => void;
-    setCurrentReplay: (gameId :string) => void;
+    deleteGameOverview : (gameId :string) => void;
 }

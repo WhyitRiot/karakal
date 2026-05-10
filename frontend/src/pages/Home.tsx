@@ -3,8 +3,8 @@ import NewPlayerModal from "../components/NewPlayerModal.tsx";
 import Join from "../assets/Join.gif"
 import JoinHover from "../assets/JoinBlue.gif"
 import GifButton from "../components/GifButton.tsx"
-import Go from "../assets/Go.gif"
-import GoHover from "../assets/GoGreen.gif"
+import YourRecord from "../assets/YourRecord.gif"
+import YourRecordHover from "../assets/YourRecordGreen.gif"
 import Host from "../assets/Host2.gif"
 import HostHover from "../assets/Host2Orange.gif"
 import Karakal from "../assets/Karakal2.gif"
@@ -46,7 +46,7 @@ const Home = () => {
                     <div className={"flex flex-col w-full gap-3 items-center"}>
                             <GifButton nonHover={Join} hover={JoinHover} click={navigateToJoin} type={"button"}/>
                             <GifButton nonHover={Host} hover={HostHover} click={navigateToCreate} type={"button"} />
-                            <GifButton nonHover={Go} hover={GoHover} type={"button"} click={navigateToReplay}/>
+                            <GifButton nonHover={YourRecord} hover={YourRecordHover} type={"button"} click={navigateToReplay}/>
                     </div>
                 </div>
         </>
