@@ -29,11 +29,6 @@ export const ReplayContextProvider = ({children} : {children: React.ReactNode}) 
         setGames(prev => prev.filter(item => item.game.gameId != gameId));
     }
 
-    useEffect(() => {
-        if (games.length === 0) return;
-        fetchGameReplay(games[0].game.gameId);
-    }, [games])
-
     useEffect(()=>{
         console.log("Inside effect")
         if (!playerId) return;

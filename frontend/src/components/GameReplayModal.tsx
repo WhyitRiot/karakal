@@ -2,6 +2,7 @@ import {useState, useEffect, useContext, use} from "react"
 import {type GameReplay} from "../utilities/context/types/GameReplay"
 import {ReplayContext} from "../utilities/context/ReplayContext.tsx"
 import RoundCard from "./RoundCard.tsx";
+import type {PlayerScore} from "../utilities/context/types/PlayerScore.ts";
 
 const GameReplayModal = ({visible, gameReplay} : {gameReplay : GameReplay, visible : boolean}) => {
     const context = useContext(ReplayContext)
@@ -14,6 +15,7 @@ const GameReplayModal = ({visible, gameReplay} : {gameReplay : GameReplay, visib
         setIsVisible(visible);
         if (gameReplay.results){
             setIsLoading(false);
+            console.log(gameReplay);
         }
     },[visible, gameReplay])
 
@@ -41,12 +43,12 @@ const GameReplayModal = ({visible, gameReplay} : {gameReplay : GameReplay, visib
                         if (isExiting) setIsVisible(false); setIsExiting(false);
                     }}>
                         <div className="flex flex-col w-90/100 h-90/100 overflow-y-scroll overscroll-contain">
-                            <p>Winner: {gameReplay.game.winner}</p>
+                            <p>{`Winner: ${gameReplay.game.winner.username}`}</p>
                             <p>Leaderboard: </p>
                             <div className="border-b-2">
                                 <table>
                                     <tbody>
-                                        {gameReplay.results.map(score => 
+                                        {gameReplay.results.map((score : PlayerScore) =>
                                                 <tr key={score.playerId}>
                                                     <td>
                                                         {score.username}
@@ -61,7 +63,7 @@ const GameReplayModal = ({visible, gameReplay} : {gameReplay : GameReplay, visib
                                 </table> 
                             </div>
                             <div className="flex flex-col gap-3">
-                                {gameReplay.roundReplays.map((round, index) => <RoundCard roundReplay={round} index={index + 1}/>)}
+                                {gameReplay.roundReplays.map((round, index) => <RoundCard key={index} roundReplay={round} index={index + 1}/>)}
                             </div>
                         </div>
                     </div>

@@ -2,7 +2,11 @@ export type Game = {
     gameId: string,
     createdAt : string,
     status: string,
-    winner: string
+    winner: {
+        playerId: string,
+        username: string,
+        score: number
+    }
 }
 
 // @Id

@@ -20,7 +20,7 @@ const Replay = () => {
                 </div>
                 <div className={"flex flex-col w-full h-4/5 items-center gap-5"}>
                     {games && games.map(game =>
-                        <GameCard gameId={game.game.gameId} date={game.game.createdAt} leaderboard={game.leaderboard} openModal={openModal}/>
+                        <GameCard key={game.game.gameId} gameId={game.game.gameId} date={game.game.createdAt} leaderboard={game.leaderboard} openModal={openModal}/>
                     )}
                 </div>
             </div>
