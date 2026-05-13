@@ -1,10 +1,10 @@
 import type {GameOverview} from "../context/types/GameOverview.ts";
 import type {GameReplay} from "../context/types/GameReplay.ts";
+import {baseURL as url} from "../DynamicUrls.ts"
 import type {Rank} from "../types/rank.ts"
 import {rankMap} from "../types/card"
 
-const baseURL = "http://localhost:8080/"
-
+const baseURL = `${url}/api/`;
 export const getGameOverviews = async (playerId : string): Promise<GameOverview[]> => {
     return await fetch(`${baseURL}replay/${playerId}`, {
         method: "GET"

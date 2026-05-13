@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import java.security.Principal;
 
 @Controller
-@CrossOrigin("*")
 public class GameController{
     private final GameService gameService;
     private final MessageDispatcher messageDispatcher;

@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/user")
-@CrossOrigin("*")
+@RequestMapping("api/user")
 public class UserController {
     private UserService userService;
 

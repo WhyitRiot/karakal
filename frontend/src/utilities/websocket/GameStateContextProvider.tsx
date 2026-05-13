@@ -19,6 +19,7 @@ import join from "../../pages/Join.tsx";
 import {createPlayMessage, type PlayMessage} from "./messages/PlayMessage.ts";
 import {createStartNextRoundMessage} from "./messages/StartNextRoundMessage.ts";
 import {createStayMessage} from "./messages/StayMessage.ts";
+import {baseURL, URL} from "../DynamicUrls.ts";
 import * as PlayerClient from "../../utilities/RestAPIClient/PlayerService.ts"
 
 export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
@@ -141,8 +142,7 @@ export const GameStateProvider = ({children} : {children: React.ReactNode}) => {
         }
     }, [gameState, playerState, playerId])
 
-
-    const URL = "ws://localhost:8080/karakal";
+    console.log(baseURL)
     const gameCreatedUrl = "/user/queue/karakal-created";
     const newPlayer = "/user/queue/new-player";
     const playerStateEndPoint = "/user/queue/player-state";

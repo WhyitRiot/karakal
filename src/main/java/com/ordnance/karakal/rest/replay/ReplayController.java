@@ -15,8 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/replay")
-@CrossOrigin("*")
+@RequestMapping("api/replay")
 public class ReplayController {
     private ReplayService replayService;
     public ReplayController(ReplayService replayService){

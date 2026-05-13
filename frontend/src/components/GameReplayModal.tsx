@@ -43,7 +43,7 @@ const GameReplayModal = ({visible, gameReplay} : {gameReplay : GameReplay, visib
                         if (isExiting) setIsVisible(false); setIsExiting(false);
                     }}>
                         <div className="flex flex-col w-90/100 h-90/100 overflow-y-scroll overscroll-contain">
-                            <p>{`Winner: ${gameReplay.game.winner.username}`}</p>
+                            {gameReplay.game.winner && <p>{`Winner: ${gameReplay.game.winner.username}`}</p>}
                             <p>Leaderboard: </p>
                             <div className="border-b-2">
                                 <table>

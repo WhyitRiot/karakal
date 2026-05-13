@@ -1,7 +1,7 @@
 import type {User, UserRequest} from "../context/types/User.ts";
+import {baseURL as url} from "../DynamicUrls.ts";
 
-const baseURL = "http://localhost:8080/"
-
+const baseURL = `${url}/api/`
 export const login = async (username : string) : Promise<Response> => {
     const user : UserRequest = {
         playerId: null,

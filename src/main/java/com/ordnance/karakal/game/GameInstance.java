@@ -254,7 +254,6 @@ public class GameInstance {
     }
 
     public void calculateRoundScore(){
-        Map<UUID, Integer> tempScores = new HashMap<>();
         int lowest = Integer.MAX_VALUE;
         UUID lowestPlayer = karakalPlayer;
         for (UUID uuid : scores.keySet()){
@@ -263,7 +262,6 @@ public class GameInstance {
                 lowest = score;
                 lowestPlayer = uuid;
             }
-            tempScores.put(uuid, score);
         }
         this.currentPlayer = lowestPlayer;
         this.currentPlayerIndex = this.players.indexOf(this.currentPlayer);
@@ -271,11 +269,8 @@ public class GameInstance {
             scores.put(karakalPlayer, scores.get(karakalPlayer) + 30);
         }
         for (UUID uuid : scores.keySet()){
-            if (uuid.equals(karakalPlayer)){
-                continue;
-            }
             int score = playerMap.get(uuid).getScore();
-            if (score > lowest){
+            if (score > lowest && !uuid.equals(karakalPlayer)){
                 scores.put(uuid, scores.get(uuid) + score);
             }
             if (scores.get(uuid) >= gameOverPointThreshold){
