@@ -38,3 +38,4 @@ build/
 downloadCards.py
 #Postgres
 postgres_data/
+.env.production
